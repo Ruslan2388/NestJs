@@ -44,7 +44,8 @@ export class BlogsRepository {
         );
     }
     async deleteBlogById(blogId) {
-        return this.blogModel.deleteOne({ id: blogId });
+        const result = await this.blogModel.deleteOne({ id: blogId });
+        return result.deletedCount;
     }
     async deleteAllBlogs() {
         return this.blogModel.deleteMany({});
