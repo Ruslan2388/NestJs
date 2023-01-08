@@ -7,15 +7,21 @@ import {
     NotFoundException,
     Param,
     Post,
+    Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostInputModelType } from '../type/posts.type';
+import {
+    CreatePostInputModelType,
+    PostPaginationQueryType,
+} from '../type/posts.type';
+import { getPostPaginationData } from '../helper/pagination';
 
 @Controller('posts')
 export class PostsController {
     constructor(protected postsService: PostsService) {}
-    @Get() getPosts() {
-        return this.postsService.getPosts();
+    @Get() getPosts(@Query() postQueryPagination: PostPaginationQueryType) {
+        const queryData = getPostPaginationData(postQueryPagination);
+        return this.postsService.getPosts(queryData);
     }
     @Get(':postId') getPostById(@Param('postId') postId) {
         return this.postsService.getPostById(postId);

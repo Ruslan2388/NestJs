@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
-import { CreatePostInputModelType } from '../type/posts.type';
+import {
+    CreatePostInputModelType,
+    PostPaginationQueryType,
+} from '../type/posts.type';
 import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Injectable()
@@ -14,8 +17,8 @@ export class PostsService {
         protected postsRepository: PostsRepository,
         protected blogsRepository: BlogsRepository,
     ) {}
-    getPosts() {
-        return this.postsRepository.getPosts();
+    getPosts(queryData) {
+        return this.postsRepository.getPosts(queryData);
     }
     async getPostById(postId: string): Promise<Post | null> {
         const post = await this.postsRepository.getPostsById(postId);

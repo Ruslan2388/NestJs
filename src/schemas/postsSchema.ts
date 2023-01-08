@@ -2,6 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type PostDocument = Post & Document;
 
+class extendedLikesInfo {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: 'Like' | 'Dislike' | 'None';
+    newestLikes: [addedAt: string, userId: string, login: string];
+}
+
 @Schema()
 export class Post {
     @Prop()
@@ -18,6 +25,8 @@ export class Post {
     blogName: string;
     @Prop()
     createdAt: string;
+    @Prop()
+    extendedLikesInfo: extendedLikesInfo;
 }
 
 export const PostScheme = SchemaFactory.createForClass(Post);
