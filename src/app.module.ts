@@ -10,11 +10,12 @@ import { UsersService } from './users/users.service';
 import { BlogsService } from './blogs/blogs.service';
 import { UsersRepository } from './users/users.repository';
 import { BlogsRepository } from './blogs/blogs.repository';
-import { User, UserSchema } from './schemas/usersSchema';
-import { Blog, BlogSchema } from './schemas/blogsSchema';
 import { PostsController } from './posts/posts.controller';
 import { PostsService } from './posts/posts.service';
 import { PostsRepository } from './posts/posts.repository';
+import { User, UserSchema } from './schemas/usersSchema';
+import { Blog, BlogSchema } from './schemas/blogsSchema';
+import { Post, PostScheme } from './schemas/postsSchema';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { PostsRepository } from './posts/posts.repository';
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
             { name: Blog.name, schema: BlogSchema },
+            { name: Post.name, schema: PostScheme },
         ]),
     ],
     controllers: [
