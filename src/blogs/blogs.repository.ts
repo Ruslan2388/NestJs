@@ -34,7 +34,7 @@ export class BlogsRepository {
         blogId: string,
         updateModel: CreateBlogInputModelType,
     ) {
-        return this.blogModel.updateOne(
+        const result = await this.blogModel.updateOne(
             { id: blogId },
             {
                 name: updateModel.name,
@@ -42,6 +42,7 @@ export class BlogsRepository {
                 websiteUrl: updateModel.websiteUrl,
             },
         );
+        return result.modifiedCount;
     }
     async deleteBlogById(blogId) {
         const result = await this.blogModel.deleteOne({ id: blogId });

@@ -50,7 +50,7 @@ export class BlogsController {
         const result = await this.postsService.getPostsByBlogId(blogId);
         return result;
     }
-    @Post('blogId/posts')
+    @Post(':blogId/posts')
     async createPostsByBlogId(
         @Body() inputModel: CreatePostInputModelType,
         @Param('blogId') blogId: string,

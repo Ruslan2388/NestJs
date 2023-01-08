@@ -17,8 +17,10 @@ export class PostsService {
     getPosts() {
         return this.postsRepository.getPosts();
     }
-    getPostById(postId: string): Promise<Post | null> {
-        return this.postsRepository.getPostsById(postId);
+    async getPostById(postId: string): Promise<Post | null> {
+        const post = await this.postsRepository.getPostsById(postId);
+        if (!post) throw new NotFoundException();
+        return post;
     }
     getPostsByBlogId(blogId: string): Promise<Post[] | null | Post> {
         return this.postsRepository.getPostsByBlogId(blogId);
@@ -55,6 +57,9 @@ export class PostsService {
         blogId: string,
     ) {
         const blog = await this.blogsRepository.getBlogById(blogId);
+        if (!blog) {
+            throw new NotFoundException();
+        }
         if (blog) {
             const newPost = {
                 id: new Date().valueOf().toString(),

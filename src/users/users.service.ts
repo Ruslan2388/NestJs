@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserInputModelType } from '../type/users.type';
 
@@ -10,7 +14,9 @@ export class UsersService {
         return this.usersRepository.getUsers(term);
     }
     async getUserById(userId) {
-        return this.usersRepository.getUserById(userId);
+        const user = this.usersRepository.getUserById(userId);
+        if (!user) throw new NotFoundException();
+        return user;
     }
     async createUser(inputModel: CreateUserInputModelType) {
         const newUser = {

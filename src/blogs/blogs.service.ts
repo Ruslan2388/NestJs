@@ -1,17 +1,23 @@
 import { BlogsRepository } from './blogs.repository';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { CreateBlogInputModelType } from '../type/blogs.type';
 
 @Injectable()
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository) {}
 
-    getBlogs() {
+    async getBlogs() {
         return this.blogsRepository.getBlogs();
     }
 
-    getBlogById(blogId: string) {
-        return this.blogsRepository.getBlogById(blogId);
+    async getBlogById(blogId: string) {
+        const blog = await this.blogsRepository.getBlogById(blogId);
+        if (!blog) throw new NotFoundException();
+        return blog;
     }
 
     async createBlog(inputModel: CreateBlogInputModelType) {
@@ -41,6 +47,7 @@ export class BlogsService {
             blogId,
             updateModel,
         );
+        if (!result) throw new NotFoundException();
         return result;
     }
 
