@@ -18,10 +18,10 @@ export class PostsController {
         return this.postsService.getPosts();
     }
     @Get(':postId') getPostById(@Param('postId') postId) {
-        return this.postsService;
+        return this.postsService.getPostById(postId);
     }
-    @Post() createBlog(@Body() inputModel: CreatePostInputModelType) {
-        return this.postsService;
+    @Post() createPost(@Body() inputModel: CreatePostInputModelType) {
+        return this.postsService.createPost(inputModel);
     }
     @Delete(':postId')
     @HttpCode(204)

@@ -14,6 +14,10 @@ export class Post {
     content: string;
     @Prop()
     blogId: string;
+    @Prop()
+    blogName: string;
+    @Prop()
+    createdAt: string;
 }
 
 export const PostScheme = SchemaFactory.createForClass(Post);

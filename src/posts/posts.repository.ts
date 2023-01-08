@@ -9,11 +9,11 @@ export class PostsRepository {
         @InjectModel(Post.name) private PostModel: Model<PostDocument>,
     ) {}
     async getPosts(): Promise<Post[]> {
-        return this.PostModel.find({});
+        return this.PostModel.find({}, { _id: 0, __v: 0 });
     }
 
     async getPostsById(postId: string): Promise<Post | null> {
-        return this.PostModel.findOne({ id: postId });
+        return this.PostModel.findOne({ id: postId }, { _id: 0, __v: 0 });
     }
 
     async createPost(newPost): Promise<Post | null> {
