@@ -12,10 +12,15 @@ import {
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogInputModelType } from '../type/blogs.type';
+import { PostsService } from '../posts/posts.service';
+import { CreatePostInputModelType } from '../type/posts.type';
 
 @Controller('blogs')
 export class BlogsController {
-    constructor(protected blogsService: BlogsService) {}
+    constructor(
+        protected blogsService: BlogsService,
+        protected postsService: PostsService,
+    ) {}
     @Get() getBlogs() {
         return this.blogsService.getBlogs();
     }
@@ -39,5 +44,21 @@ export class BlogsController {
             throw new NotFoundException();
         }
         return;
+    }
+    @Get(':blogId/posts')
+    async getPostsByBlogId(@Param('blogId') blogId: string) {
+        const result = await this.postsService.getPostsByBlogId(blogId);
+        return result;
+    }
+    @Post('blogId/posts')
+    async createPostsByBlogId(
+        @Body() inputModel: CreatePostInputModelType,
+        @Param('blogId') blogId: string,
+    ) {
+        const result = await this.postsService.createPostsByBlogId(
+            inputModel,
+            blogId,
+        );
+        return result;
     }
 }

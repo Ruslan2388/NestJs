@@ -15,7 +15,9 @@ export class PostsRepository {
     async getPostsById(postId: string): Promise<Post | null> {
         return this.PostModel.findOne({ id: postId }, { _id: 0, __v: 0 });
     }
-
+    async getPostsByBlogId(blogId: string) {
+        return this.PostModel.find({ blogId: blogId }, { _id: 0, __v: 0 });
+    }
     async createPost(newPost): Promise<Post | null> {
         try {
             return this.PostModel.create(newPost);
