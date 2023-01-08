@@ -12,6 +12,9 @@ import { UsersRepository } from './users/users.repository';
 import { BlogsRepository } from './blogs/blogs.repository';
 import { User, UserSchema } from './schemas/usersSchema';
 import { Blog, BlogSchema } from './schemas/blogsSchema';
+import { PostsController } from './posts/posts.controller';
+import { PostsService } from './posts/posts.service';
+import { PostsRepository } from './posts/posts.repository';
 
 @Module({
     imports: [
@@ -27,6 +30,7 @@ import { Blog, BlogSchema } from './schemas/blogsSchema';
         UsersController,
         BlogsController,
         DeleteAllController,
+        PostsController,
     ],
     providers: [
         AppService,
@@ -34,6 +38,8 @@ import { Blog, BlogSchema } from './schemas/blogsSchema';
         UsersRepository,
         BlogsService,
         BlogsRepository,
+        PostsService,
+        PostsRepository,
     ],
 })
 export class AppModule {}
