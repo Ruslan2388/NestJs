@@ -26,9 +26,9 @@ export class PostsRepository {
         }
     }
     // update
-    async deletePostById(postId: string): Promise<boolean> {
+    async deletePostById(postId: string): Promise<number> {
         const result = await this.PostModel.deleteOne({ id: postId });
-        return result.acknowledged;
+        return result.deletedCount;
     }
 
     async deleteAllPosts() {
