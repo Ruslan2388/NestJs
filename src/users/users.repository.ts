@@ -29,9 +29,9 @@ export class UsersRepository {
         }
     }
 
-    async deleteUserById(userId: string): Promise<boolean> {
+    async deleteUserById(userId: string): Promise<number> {
         const result = await this.userModel.deleteOne({ id: userId });
-        return result.acknowledged;
+        return result.deletedCount;
     }
     async deleteAllUsers() {
         return this.userModel.deleteMany({});

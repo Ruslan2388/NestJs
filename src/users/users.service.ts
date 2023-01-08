@@ -9,6 +9,9 @@ export class UsersService {
     getUsers(term: string) {
         return this.usersRepository.getUsers(term);
     }
+    async getUserById(userId) {
+        return this.usersRepository.getUserById(userId);
+    }
     async createUser(inputModel: CreateUserInputModelType) {
         const newUser = {
             id: new Date().valueOf().toString(),
@@ -27,11 +30,7 @@ export class UsersService {
         };
     }
 
-    async getUserById(userId) {
-        return this.usersRepository.getUserById(userId);
-    }
-
-    async deleteUser(userId: string) {
+    async deleteUserById(userId: string) {
         return this.usersRepository.deleteUserById(userId);
     }
 }
