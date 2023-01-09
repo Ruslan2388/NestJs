@@ -139,7 +139,7 @@ export class PostsRepository {
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort(objectSort);
-        return { pagesCount, page, pageSize, totalCount, posts: items };
+        return { pagesCount, page, pageSize, totalCount, items };
     }
 
     async getPostsById(postId: string): Promise<Post | null> {
@@ -277,7 +277,7 @@ export class PostsRepository {
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort(objectSort);
-        return { pagesCount, page, pageSize, totalCount, posts: items };
+        return { pagesCount, page, pageSize, totalCount, items };
     }
     async createPost(newPost): Promise<Post | null> {
         try {
