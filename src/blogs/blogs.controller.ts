@@ -11,13 +11,19 @@ import {
     Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { CreateBlogInputModelType } from '../type/blogs.type';
+import {
+    BlogPaginationQueryType,
+    CreateBlogInputModelType,
+} from '../type/blogs.type';
 import { PostsService } from '../posts/posts.service';
 import {
     CreatePostInputModelType,
     PostPaginationQueryType,
 } from '../type/posts.type';
-import { getPostPaginationData } from '../helper/pagination';
+import {
+    BlogPaginationData,
+    getPostPaginationData,
+} from '../helper/pagination';
 
 @Controller('blogs')
 export class BlogsController {
@@ -25,8 +31,9 @@ export class BlogsController {
         protected blogsService: BlogsService,
         protected postsService: PostsService,
     ) {}
-    @Get() getBlogs() {
-        return this.blogsService.getBlogs();
+    @Get() getBlogs(@Query() blogQueryPagination: BlogPaginationQueryType) {
+        const queryData = BlogPaginationData(blogQueryPagination);
+        return this.blogsService.getBlogs(queryData);
     }
     @Get(':blogId') getBlogById(@Param('blogId') blogId) {
         return this.blogsService.getBlogById(blogId);

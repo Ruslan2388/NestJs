@@ -289,7 +289,7 @@ export class PostsRepository {
             return null;
         }
     }
-    // update
+
     async deletePostById(postId: string): Promise<number> {
         const result = await this.PostsModel.deleteOne({ id: postId });
         return result.deletedCount;

@@ -10,8 +10,8 @@ import { CreateBlogInputModelType } from '../type/blogs.type';
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository) {}
 
-    async getBlogs() {
-        return this.blogsRepository.getBlogs();
+    async getBlogs(queryData) {
+        return this.blogsRepository.getBlogs(queryData);
     }
 
     async getBlogById(blogId: string) {
