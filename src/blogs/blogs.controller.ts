@@ -13,7 +13,11 @@ import {
 import { BlogsService } from './blogs.service';
 import { CreateBlogInputModelType } from '../type/blogs.type';
 import { PostsService } from '../posts/posts.service';
-import { CreatePostInputModelType } from '../type/posts.type';
+import {
+    CreatePostInputModelType,
+    PostPaginationQueryType,
+} from '../type/posts.type';
+import { getPostPaginationData } from '../helper/pagination';
 
 @Controller('blogs')
 export class BlogsController {
@@ -46,8 +50,15 @@ export class BlogsController {
         return;
     }
     @Get(':blogId/posts')
-    async getPostsByBlogId(@Param('blogId') blogId: string) {
-        const result = await this.postsService.getPostsByBlogId(blogId);
+    async getPostsByBlogId(
+        @Param('blogId') blogId: string,
+        @Query() postQueryPagination: PostPaginationQueryType,
+    ) {
+        const queryData = getPostPaginationData(postQueryPagination);
+        const result = await this.postsService.getPostsByBlogId(
+            queryData,
+            blogId,
+        );
         return result;
     }
     @Post(':blogId/posts')

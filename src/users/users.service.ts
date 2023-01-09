@@ -10,8 +10,8 @@ import { CreateUserInputModelType } from '../type/users.type';
 export class UsersService {
     constructor(protected usersRepository: UsersRepository) {}
 
-    getUsers(term: string) {
-        return this.usersRepository.getUsers(term);
+    async getUsers(queryData) {
+        return await this.usersRepository.getUsers(queryData);
     }
     async getUserById(userId) {
         const user = this.usersRepository.getUserById(userId);

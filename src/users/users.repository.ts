@@ -9,11 +9,21 @@ export class UsersRepository {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) {}
-    async getUsers(term: string): Promise<User[]> {
-        const users = this.userModel
-            .find({}, { _id: 0, __v: 0, password: 0 })
-            .exec();
-        return users;
+    async getUsers(queryData): Promise<User[] | any> {
+        const totalCount = await this.userModel.countDocuments({});
+
+        const page = Number(queryData.pageNumber);
+        const pagesCount = Number(
+            Math.ceil(Number(totalCount) / queryData.pageSize),
+        );
+        const pageSize = Number(queryData.pageSize);
+        console.log('war1');
+        const items = await this.userModel
+            .find({}, { _id: 0, __v: 0 })
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
+        console.log(items);
+        return { pagesCount, page, pageSize, totalCount, posts: items };
     }
     async getUserById(userId): Promise<User> | null {
         return this.userModel.findOne(

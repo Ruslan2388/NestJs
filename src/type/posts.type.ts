@@ -11,3 +11,9 @@ export type PostPaginationQueryType = {
     sortBy: string;
     sortDirection: 'asc' | 'desc';
 };
+
+type newestLikes = {
+    login: string;
+    userId: string;
+    addedAt: string;
+};

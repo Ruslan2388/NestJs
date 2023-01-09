@@ -10,24 +10,26 @@ import {
     Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserInputModelType } from '../type/users.type';
+import {
+    CreateUserInputModelType,
+    UsersPaginationQueryType,
+} from '../type/users.type';
+import { UsersPaginationData } from '../helper/pagination';
 
 @Controller('users')
 export class UsersController {
     constructor(protected usersService: UsersService) {}
 
-    @Get()
-    getUsers(@Query('term') term: string) {
-        return this.usersService.getUsers(term);
+    @Get() getUsers(@Query() usersQueryPagination: UsersPaginationQueryType) {
+        const queryData = UsersPaginationData(usersQueryPagination);
+        return this.usersService.getUsers(queryData);
     }
 
-    @Get(':userId')
-    getUser(@Param('userId') userId) {
+    @Get(':userId') getUser(@Param('userId') userId) {
         return this.usersService.getUserById(userId);
     }
 
-    @Post()
-    createUsers(@Body() inputModel: CreateUserInputModelType) {
+    @Post() createUsers(@Body() inputModel: CreateUserInputModelType) {
         return this.usersService.createUser(inputModel);
     }
 

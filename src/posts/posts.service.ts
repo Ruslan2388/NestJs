@@ -25,8 +25,8 @@ export class PostsService {
         if (!post) throw new NotFoundException();
         return post;
     }
-    getPostsByBlogId(blogId: string): Promise<Post[] | null | Post> {
-        return this.postsRepository.getPostsByBlogId(blogId);
+    getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {
+        return this.postsRepository.getPostsByBlogId(queryData, blogId);
     }
 
     async createPost(inputModel: CreatePostInputModelType) {
@@ -40,6 +40,12 @@ export class PostsService {
                 blogId: inputModel.blogId,
                 blogName: blog.name,
                 createdAt: new Date().toISOString(),
+                extendedLikesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                    newestLikes: [],
+                },
             };
             const result = this.postsRepository.createPost(newPost);
             if (!result) throw new BadRequestException();
@@ -51,6 +57,12 @@ export class PostsService {
                 blogId: newPost.blogId,
                 blogName: newPost.blogName,
                 createdAt: newPost.createdAt,
+                extendedLikesInfo: {
+                    likesCount: newPost.extendedLikesInfo.likesCount,
+                    dislikesCount: newPost.extendedLikesInfo.dislikesCount,
+                    myStatus: newPost.extendedLikesInfo.myStatus,
+                    newestLikes: [],
+                },
             };
         }
         throw new NotFoundException();
@@ -72,6 +84,12 @@ export class PostsService {
                 blogId: blogId,
                 blogName: blog.name,
                 createdAt: new Date().toISOString(),
+                extendedLikesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                    newestLikes: [],
+                },
             };
             const result = this.postsRepository.createPost(newPost);
             if (!result) throw new BadRequestException();
@@ -83,6 +101,12 @@ export class PostsService {
                 blogId: newPost.blogId,
                 blogName: newPost.blogName,
                 createdAt: newPost.createdAt,
+                extendedLikesInfo: {
+                    likesCount: newPost.extendedLikesInfo.likesCount,
+                    dislikesCount: newPost.extendedLikesInfo.dislikesCount,
+                    myStatus: newPost.extendedLikesInfo.myStatus,
+                    newestLikes: [],
+                },
             };
         }
         throw new NotFoundException();
