@@ -5,10 +5,7 @@ import {
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
-import {
-    CreatePostInputModelType,
-    PostPaginationQueryType,
-} from '../type/posts.type';
+import { CreatePostInputModelType } from '../type/posts.type';
 import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Injectable()
@@ -72,6 +69,7 @@ export class PostsService {
         }
         throw new NotFoundException();
     }
+
     async createPostsByBlogId(
         inputModel: CreatePostInputModelType,
         blogId: string,
@@ -116,6 +114,18 @@ export class PostsService {
         }
         throw new NotFoundException();
     }
+
+    async updatePostByPostId(postId, updateModel: CreatePostInputModelType) {
+        const result = await this.postsRepository.updatePostByPostId(
+            postId,
+            updateModel,
+        );
+        const blog = this.blogsRepository.getBlogById(updateModel.blogId);
+        if (!blog) throw new NotFoundException();
+        if (!result) throw new NotFoundException();
+        return result;
+    }
+
     async deletePostById(postId: string) {
         return this.postsRepository.deletePostById(postId);
     }

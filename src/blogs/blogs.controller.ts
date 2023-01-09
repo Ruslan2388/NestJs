@@ -41,7 +41,9 @@ export class BlogsController {
     @Post() createBlog(@Body() inputModel: CreateBlogInputModelType) {
         return this.blogsService.createBlog(inputModel);
     }
-    @Put(':blogId') updateBlogByBlogId(
+    @Put(':blogId')
+    @HttpCode(204)
+    updateBlogByBlogId(
         @Param('blogId') blogId,
         @Body() updateModel: CreateBlogInputModelType,
     ) {

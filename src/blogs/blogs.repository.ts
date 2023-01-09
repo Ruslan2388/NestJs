@@ -60,7 +60,9 @@ export class BlogsRepository {
                 websiteUrl: updateModel.websiteUrl,
             },
         );
-        return result.modifiedCount;
+        console.log(result.matchedCount);
+        console.log(result.acknowledged);
+        return result.matchedCount;
     }
     async deleteBlogById(blogId) {
         const result = await this.blogModel.deleteOne({ id: blogId });

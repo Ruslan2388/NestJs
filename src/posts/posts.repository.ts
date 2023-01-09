@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../schemas/postsSchema';
 import { Model } from 'mongoose';
+import { CreatePostInputModelType } from '../type/posts.type';
 
 @Injectable()
 export class PostsRepository {
@@ -288,6 +289,19 @@ export class PostsRepository {
         } catch (e) {
             return null;
         }
+    }
+
+    async updatePostByPostId(postId, updateModel: CreatePostInputModelType) {
+        const result = await this.PostsModel.updateOne(
+            { id: postId },
+            {
+                title: updateModel.title,
+                content: updateModel.content,
+                websiteUrl: updateModel.blogId,
+                shortDescription: updateModel.shortDescription,
+            },
+        );
+        return result.matchedCount;
     }
 
     async deletePostById(postId: string): Promise<number> {

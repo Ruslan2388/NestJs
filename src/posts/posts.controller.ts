@@ -7,6 +7,7 @@ import {
     NotFoundException,
     Param,
     Post,
+    Put,
     Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -15,6 +16,7 @@ import {
     PostPaginationQueryType,
 } from '../type/posts.type';
 import { getPostPaginationData } from '../helper/pagination';
+import { CreateBlogInputModelType } from '../type/blogs.type';
 
 @Controller('posts')
 export class PostsController {
@@ -29,6 +31,16 @@ export class PostsController {
     @Post() createPost(@Body() inputModel: CreatePostInputModelType) {
         return this.postsService.createPost(inputModel);
     }
+
+    @Put(':postId')
+    @HttpCode(204)
+    updateBlogByBlogId(
+        @Param('postId') postId,
+        @Body() updateModel: CreatePostInputModelType,
+    ) {
+        return this.postsService.updatePostByPostId(postId, updateModel);
+    }
+
     @Delete(':postId')
     @HttpCode(204)
     async deletePostById(@Param('postId') postId) {
