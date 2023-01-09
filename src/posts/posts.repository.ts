@@ -149,7 +149,9 @@ export class PostsRepository {
     async getPostsByBlogId(queryData, blogId): Promise<Post[] | any> {
         const userId = '';
         // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
-        const totalCount = await this.PostsModel.countDocuments({});
+        const totalCount = await this.PostsModel.countDocuments({
+            blogId: blogId,
+        });
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(
             Math.ceil(Number(totalCount) / queryData.pageSize),
