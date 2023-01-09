@@ -10,7 +10,7 @@ export class PostsRepository {
     ) {}
     async getPosts(queryData): Promise<Post[] | any> {
         const userId = '';
-        const objectSort = { [queryData.sortBy]: queryData.sortDirection };
+        // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
         const totalCount = await this.PostsModel.countDocuments({});
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(
@@ -138,7 +138,7 @@ export class PostsRepository {
         ])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
-            .sort(objectSort);
+            .sort({ [queryData.sortBy]: queryData.sortDirection });
 
         return { pagesCount, page, pageSize, totalCount, items };
     }
@@ -277,7 +277,7 @@ export class PostsRepository {
         ])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
-            .sort(objectSort);
+            .sort({ [queryData.sortBy]: queryData.sortDirection });
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async createPost(newPost): Promise<Post | null> {
