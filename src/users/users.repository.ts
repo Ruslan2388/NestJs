@@ -21,9 +21,6 @@ export class UsersRepository {
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort([[queryData.sortBy, queryData.sortDirection]]);
-        console.log('ssssssss');
-        console.log(queryData);
-        console.log(page);
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async getUserById(userId): Promise<User> | null {
