@@ -136,8 +136,8 @@ export class PostsRepository {
                 },
             },
         ])
-            .skip((page - 1) * pageSize)
             .sort({ [queryData.sortBy]: queryData.sortDirection })
+            .skip((page - 1) * pageSize)
             .limit(pageSize);
         console.log(queryData);
         return { pagesCount, page, pageSize, totalCount, items };
@@ -275,9 +275,9 @@ export class PostsRepository {
                 },
             },
         ])
+            .sort({ [queryData.sortBy]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
-            .limit(pageSize)
-            .sort({ [queryData.sortBy]: queryData.sortDirection });
+            .limit(pageSize);
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async createPost(newPost): Promise<Post | null> {

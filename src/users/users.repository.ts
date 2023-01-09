@@ -18,9 +18,9 @@ export class UsersRepository {
         const pageSize = Number(queryData.pageSize);
         const items = await this.userModel
             .find({}, { _id: 0, __v: 0, password: 0 })
+            .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
-            .limit(pageSize)
-            .sort([[queryData.sortBy, queryData.sortDirection]]);
+            .limit(pageSize);
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async getUserById(userId): Promise<User> | null {
