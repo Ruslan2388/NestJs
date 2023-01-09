@@ -17,7 +17,7 @@ export class UsersRepository {
         );
         const pageSize = Number(queryData.pageSize);
         const items = await this.userModel
-            .find({}, { _id: 0, __v: 0 })
+            .find({}, { _id: 0, __v: 0, password: 0 })
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort([[queryData.sortBy, queryData.sortDirection]]);
