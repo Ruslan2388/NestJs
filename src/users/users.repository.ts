@@ -11,7 +11,6 @@ export class UsersRepository {
     ) {}
     async getUsers(queryData): Promise<User[] | any> {
         const totalCount = await this.userModel.countDocuments({});
-
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(
             Math.ceil(Number(totalCount) / queryData.pageSize),
@@ -20,7 +19,11 @@ export class UsersRepository {
         const items = await this.userModel
             .find({}, { _id: 0, __v: 0 })
             .skip((page - 1) * pageSize)
-            .limit(pageSize);
+            .limit(pageSize)
+            .sort([[queryData.sortBy, queryData.sortDirection]]);
+        console.log('ssssssss');
+        console.log(queryData);
+        console.log(page);
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async getUserById(userId): Promise<User> | null {

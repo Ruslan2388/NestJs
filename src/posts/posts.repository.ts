@@ -139,6 +139,7 @@ export class PostsRepository {
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort(objectSort);
+
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
