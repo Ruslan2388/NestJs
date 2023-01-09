@@ -25,7 +25,12 @@ export class PostsService {
         if (!post) throw new NotFoundException();
         return post;
     }
-    getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {
+    async getPostsByBlogId(
+        queryData,
+        blogId: string,
+    ): Promise<Post[] | null | Post> {
+        const blog = await this.blogsRepository.getBlogById(blogId);
+        if (!blog) throw new NotFoundException();
         return this.postsRepository.getPostsByBlogId(queryData, blogId);
     }
 
