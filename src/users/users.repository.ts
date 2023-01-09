@@ -10,14 +10,16 @@ export class UsersRepository {
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) {}
     async getUsers(queryData): Promise<User[] | any> {
-        const totalCount = await this.userModel.countDocuments({});
+        const filter = await this._getUsersFilterForQuery(queryData);
+        const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(
             Math.ceil(Number(totalCount) / queryData.pageSize),
         );
         const pageSize = Number(queryData.pageSize);
+        console.log(filter);
         const items = await this.userModel
-            .find({}, { _id: 0, __v: 0, password: 0 })
+            .find(filter, { _id: 0, __v: 0, password: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize);
@@ -43,5 +45,36 @@ export class UsersRepository {
     }
     async deleteAllUsers() {
         return this.userModel.deleteMany({});
+    }
+    async _getUsersFilterForQuery(queryData) {
+        if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
+            return {
+                login: { $regex: queryData.searchLoginTerm, $options: 'i' },
+            };
+        }
+        if (queryData.searchEmailTerm && !queryData.searchLoginTerm) {
+            return {
+                email: { $regex: queryData.searchEmailTerm, $options: 'i' },
+            };
+        }
+        if (queryData.searchEmailTerm && queryData.searchLoginTerm) {
+            return {
+                $or: [
+                    {
+                        login: {
+                            $regex: queryData.searchLoginTerm,
+                            $options: 'i',
+                        },
+                    },
+                    {
+                        email: {
+                            $regex: queryData.searchEmailTerm,
+                            $options: 'i',
+                        },
+                    },
+                ],
+            };
+        }
+        return {};
     }
 }
