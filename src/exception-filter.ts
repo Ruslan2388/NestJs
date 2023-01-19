@@ -25,12 +25,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
         if (status === 400) {
             const errorResponse = {
-                errors: [],
+                errorsMessages: [],
             };
             const responseBody: any = exception.getResponse();
             console.log(responseBody);
             responseBody.message.forEach((m) =>
-                errorResponse.errors.push({
+                errorResponse.errorsMessages.push({
                     message: m.message,
                     field: m.field,
                 }),
