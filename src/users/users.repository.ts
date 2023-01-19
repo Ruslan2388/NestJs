@@ -15,7 +15,6 @@ export class UsersRepository {
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
-        console.log(filter);
         const result = await this.userModel
             .find(filter, { _id: 0, __v: 0, 'accountData.password': 0, emailConfirmation: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
@@ -55,6 +54,27 @@ export class UsersRepository {
         return this.userModel.deleteMany({});
     }
 
+    //$2b$10$7jFxWmI4P0MAFlWM83sFH.VdzaN4YBL2.kmStL2XBz.pbkenRUtTC
+    async updateUserConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
+        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.confirmationCode': newConfirmationCode } });
+        return result.matchedCount === 1;
+    }
+
+    async updatePasswordRecoveryCode(recoveryCode: string, newHashPassword: string) {
+        const result = await this.userModel.updateOne({ 'emailConfirmation.recoveryCode': recoveryCode }, { $set: { 'accountData.password': newHashPassword } });
+        return result.matchedCount === 1;
+    }
+
+    async updateCheckConfirmCode(code: string) {
+        const result = await this.userModel.updateOne({ 'emailConfirmation.confirmationCode': code }, { $set: { 'emailConfirmation.isConfirmed': true } });
+        return result.matchedCount === 1;
+    }
+
+    async updateUserRecoveryPasswordCodeByEmail(email: string, NewRecoveryCode: string) {
+        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.recoveryCode': NewRecoveryCode } });
+        return result.matchedCount === 1;
+    }
+
     async _getUsersFilterForQuery(queryData) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
@@ -86,27 +106,6 @@ export class UsersRepository {
         }
         return {};
     }
-    //$2b$10$7jFxWmI4P0MAFlWM83sFH.VdzaN4YBL2.kmStL2XBz.pbkenRUtTC
-    async updateUserConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
-        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.confirmationCode': newConfirmationCode } });
-        return result.matchedCount === 1;
-    }
-
-    async updatePasswordRecoveryCode(recoveryCode: string, newHashPassword: string) {
-        const result = await this.userModel.updateOne({ 'emailConfirmation.recoveryCode': recoveryCode }, { $set: { 'accountData.password': newHashPassword } });
-        return result.matchedCount === 1;
-    }
-
-    async updateCheckConfirmCode(code: string) {
-        const result = await this.userModel.updateOne({ 'emailConfirmation.confirmationCode': code }, { $set: { 'emailConfirmation.isConfirmed': true } });
-        return result.matchedCount === 1;
-    }
-
-    async updateUserRecoveryPasswordCodeByEmail(email: string, NewRecoveryCode: string) {
-        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.recoveryCode': NewRecoveryCode } });
-        return result.matchedCount === 1;
-    }
-
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
         return users.map((u) => ({
             id: u.accountData.id,
