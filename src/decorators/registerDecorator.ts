@@ -4,7 +4,6 @@ import { IsEmailInInDB, IsLoginInDB } from '../validator/registerValidator';
 export function IsLoginInDb(validationOptions?: ValidationOptions) {
     return function (object: any, propertyName: string) {
         registerDecorator({
-            name: 'isLoginDb',
             target: object.constructor,
             propertyName: propertyName,
             options: validationOptions,
@@ -15,7 +14,6 @@ export function IsLoginInDb(validationOptions?: ValidationOptions) {
 export function IsEmailInDb(validationOptions?: ValidationOptions) {
     return function (object: any, propertyName: string) {
         registerDecorator({
-            name: 'IsEmailDb',
             target: object.constructor,
             propertyName: propertyName,
             options: validationOptions,

@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
-const mailAccount = {
-    user: 'heeca@mail.ru',
-    pass: 'YFjuyXsN0yUu9S7vTigR',
-};
-
 @Injectable()
 export class EmailService {
     constructor(private readonly mailerService: MailerService) {}
