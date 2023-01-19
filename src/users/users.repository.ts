@@ -2,20 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/usersSchema';
 import { Model } from 'mongoose';
-import { CreateUserInputModelType } from '../type/users.type';
 
 @Injectable()
 export class UsersRepository {
-    constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
-    ) {}
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
     async getUsers(queryData): Promise<User[] | any> {
         const filter = await this._getUsersFilterForQuery(queryData);
         const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
-        const pagesCount = Number(
-            Math.ceil(Number(totalCount) / queryData.pageSize),
-        );
+        const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         console.log(filter);
         const items = await this.userModel
@@ -25,13 +21,21 @@ export class UsersRepository {
             .limit(pageSize);
         return { pagesCount, page, pageSize, totalCount, items };
     }
-    async getUserById(userId): Promise<User> | null {
+
+    async getUserById(userId): Promise<User | null> {
+        return this.userModel.findOne({ 'accountData.id': userId }, { _id: 0, __v: 0, password: 0 });
+    }
+
+    async getUserByLoginOrEmail(loginOrEmail: string) {
         return this.userModel.findOne(
-            { id: userId },
+            {
+                $or: [{ 'accountData.login': loginOrEmail }, { 'accountData.email': loginOrEmail }],
+            },
             { _id: 0, __v: 0, password: 0 },
         );
     }
-    async createUser(newUser: CreateUserInputModelType): Promise<User | null> {
+
+    async createUser(newUser): Promise<User | null> {
         try {
             return this.userModel.create(newUser);
         } catch (e) {
@@ -40,12 +44,14 @@ export class UsersRepository {
     }
 
     async deleteUserById(userId: string): Promise<number> {
-        const result = await this.userModel.deleteOne({ id: userId });
+        const result = await this.userModel.deleteOne({ 'accountData.id': userId });
         return result.deletedCount;
     }
+
     async deleteAllUsers() {
         return this.userModel.deleteMany({});
     }
+
     async _getUsersFilterForQuery(queryData) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
@@ -76,5 +82,25 @@ export class UsersRepository {
             };
         }
         return {};
+    }
+    //$2b$10$7jFxWmI4P0MAFlWM83sFH.VdzaN4YBL2.kmStL2XBz.pbkenRUtTC
+    async updateUserConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
+        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.confirmationCode': newConfirmationCode } });
+        return result.matchedCount === 1;
+    }
+
+    async updatePasswordRecoveryCode(recoveryCode: string, newHashPassword: string) {
+        const result = await this.userModel.updateOne({ 'emailConfirmation.recoveryCode': recoveryCode }, { $set: { 'accountData.password': newHashPassword } });
+        return result.matchedCount === 1;
+    }
+
+    async updateCheckConfirmCode(code: string) {
+        const result = await this.userModel.updateOne({ 'emailConfirmation.confirmationCode': code }, { $set: { 'emailConfirmation.isConfirmed': true } });
+        return result.matchedCount === 1;
+    }
+
+    async updateUserRecoveryPasswordCodeByEmail(email: string, NewRecoveryCode: string) {
+        const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.recoveryCode': NewRecoveryCode } });
+        return result.matchedCount === 1;
     }
 }

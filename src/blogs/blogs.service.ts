@@ -1,10 +1,6 @@
 import { BlogsRepository } from './blogs.repository';
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
-import { CreateBlogInputModelType } from '../type/blogs.type';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 
 @Injectable()
 export class BlogsService {
@@ -29,7 +25,7 @@ export class BlogsService {
             createdAt: new Date().toISOString(),
         };
         const result = await this.blogsRepository.createBlog(newBlog);
-        if (!result) throw new BadRequestException();
+        if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);
         return {
             id: newBlog.id,
             name: newBlog.name,
@@ -39,14 +35,8 @@ export class BlogsService {
         };
     }
 
-    async updateBlogByBlogId(
-        blogId: string,
-        updateModel: CreateBlogInputModelType,
-    ) {
-        const result = await this.blogsRepository.updateBlogByBlogId(
-            blogId,
-            updateModel,
-        );
+    async updateBlogByBlogId(blogId: string, updateModel: UpdateBlogInputModelType) {
+        const result = await this.blogsRepository.updateBlogByBlogId(blogId, updateModel);
         if (!result) throw new NotFoundException();
         return result;
     }

@@ -1,19 +1,12 @@
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
-import { CreatePostInputModelType } from '../type/posts.type';
+import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
 import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Injectable()
 export class PostsService {
-    constructor(
-        protected postsRepository: PostsRepository,
-        protected blogsRepository: BlogsRepository,
-    ) {}
+    constructor(protected postsRepository: PostsRepository, protected blogsRepository: BlogsRepository) {}
     getPosts(queryData) {
         return this.postsRepository.getPosts(queryData);
     }
@@ -22,10 +15,7 @@ export class PostsService {
         if (!post) throw new NotFoundException();
         return post;
     }
-    async getPostsByBlogId(
-        queryData,
-        blogId: string,
-    ): Promise<Post[] | null | Post> {
+    async getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         return this.postsRepository.getPostsByBlogId(queryData, blogId);
@@ -50,7 +40,11 @@ export class PostsService {
                 },
             };
             const result = this.postsRepository.createPost(newPost);
-            if (!result) throw new BadRequestException();
+            if (!result)
+                throw new BadRequestException({
+                    message: 'Bad',
+                    field: 'NotCreatePost',
+                });
             return {
                 id: newPost.id,
                 title: newPost.title,
@@ -70,10 +64,7 @@ export class PostsService {
         throw new NotFoundException();
     }
 
-    async createPostsByBlogId(
-        inputModel: CreatePostInputModelType,
-        blogId: string,
-    ) {
+    async createPostsByBlogId(inputModel: CreatePostInputModelType, blogId: string) {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) {
             throw new NotFoundException();
@@ -95,7 +86,7 @@ export class PostsService {
                 },
             };
             const result = this.postsRepository.createPost(newPost);
-            if (!result) throw new BadRequestException();
+            if (!result) throw new BadRequestException([{ message: 'Bad', field: 'NotCreatePost' }]);
             return {
                 id: newPost.id,
                 title: newPost.title,
@@ -115,11 +106,8 @@ export class PostsService {
         throw new NotFoundException();
     }
 
-    async updatePostByPostId(postId, updateModel: CreatePostInputModelType) {
-        const result = await this.postsRepository.updatePostByPostId(
-            postId,
-            updateModel,
-        );
+    async updatePostByPostId(postId, updateModel: UpdatePostInputModelType) {
+        const result = await this.postsRepository.updatePostByPostId(postId, updateModel);
         const blog = this.blogsRepository.getBlogById(updateModel.blogId);
         if (!blog) throw new NotFoundException();
         if (!result) throw new NotFoundException();

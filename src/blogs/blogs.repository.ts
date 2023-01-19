@@ -2,13 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../schemas/blogsSchema';
 import { Model } from 'mongoose';
-import { CreateBlogInputModelType } from '../type/blogs.type';
+import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 
 @Injectable()
 export class BlogsRepository {
-    constructor(
-        @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    ) {}
+    constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
     async getBlogs(queryData): Promise<Blog[] | any> {
         const filter: any = {};
         if (queryData.searchNameTerm) {
@@ -33,10 +31,7 @@ export class BlogsRepository {
     }
 
     async getBlogById(blogId): Promise<Blog> | null {
-        const blog = await this.blogModel.findOne(
-            { id: blogId },
-            { _id: 0, __v: 0 },
-        );
+        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0 });
         return blog;
     }
 
@@ -48,10 +43,7 @@ export class BlogsRepository {
         }
     }
 
-    async updateBlogByBlogId(
-        blogId: string,
-        updateModel: CreateBlogInputModelType,
-    ) {
+    async updateBlogByBlogId(blogId: string, updateModel: UpdateBlogInputModelType) {
         const result = await this.blogModel.updateOne(
             { id: blogId },
             {
@@ -60,8 +52,6 @@ export class BlogsRepository {
                 websiteUrl: updateModel.websiteUrl,
             },
         );
-        console.log(result.matchedCount);
-        console.log(result.acknowledged);
         return result.matchedCount;
     }
     async deleteBlogById(blogId) {

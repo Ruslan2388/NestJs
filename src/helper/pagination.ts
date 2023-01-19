@@ -1,6 +1,7 @@
-import { PostPaginationQueryType } from '../type/posts.type';
-import { UsersPaginationQueryType } from '../type/users.type';
-import { BlogPaginationQueryType } from '../type/blogs.type';
+import { PostPaginationQueryType } from '../posts/PostDto';
+import { UsersPaginationQueryType } from '../users/UserDto';
+import { BlogPaginationQueryType } from '../blogs/BlogDto';
+import { Prop } from '@nestjs/mongoose';
 
 export const getPostPaginationData = (query: any): PostPaginationQueryType => {
     const searchNameTerm = query.searchNameTerm ? query.searchNameTerm : '';
@@ -34,4 +35,19 @@ export const BlogPaginationData = (query: any): BlogPaginationQueryType => {
     const sortBy = query.sortBy === 'name' ? 'name' : 'createdAt';
     const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
     return { searchNameTerm, pageSize, pageNumber, sortBy, sortDirection };
+};
+export type userType = {
+    accountData: {
+        id: string;
+        login: string;
+        password: string;
+        email: string;
+        createdAt: string;
+    };
+    emailConfirmation: {
+        confirmationCode: string;
+        expirationData: string;
+        recoveryCode: string;
+        isConfirmed: boolean;
+    };
 };

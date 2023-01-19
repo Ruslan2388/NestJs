@@ -1,56 +1,40 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    NotFoundException,
-    Param,
-    Post,
-    Put,
-    Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import {
-    BlogPaginationQueryType,
-    CreateBlogInputModelType,
-} from '../type/blogs.type';
+import { BlogPaginationQueryType, CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { PostsService } from '../posts/posts.service';
-import {
-    CreatePostInputModelType,
-    PostPaginationQueryType,
-} from '../type/posts.type';
-import {
-    BlogPaginationData,
-    getPostPaginationData,
-} from '../helper/pagination';
+import { CreatePostInputModelType, PostPaginationQueryType } from '../posts/PostDto';
+import { BlogPaginationData, getPostPaginationData } from '../helper/pagination';
+import { BasicAuthGuard } from '../guard/basicAuthGuard';
 
 @Controller('blogs')
 export class BlogsController {
-    constructor(
-        protected blogsService: BlogsService,
-        protected postsService: PostsService,
-    ) {}
+    constructor(protected blogsService: BlogsService, protected postsService: PostsService) {}
+
     @Get() getBlogs(@Query() blogQueryPagination: BlogPaginationQueryType) {
         const queryData = BlogPaginationData(blogQueryPagination);
         return this.blogsService.getBlogs(queryData);
     }
+
     @Get(':blogId') getBlogById(@Param('blogId') blogId) {
         return this.blogsService.getBlogById(blogId);
     }
-    @Post() createBlog(@Body() inputModel: CreateBlogInputModelType) {
+
+    @Post()
+    @UseGuards(BasicAuthGuard)
+    createBlog(@Body() inputModel: CreateBlogInputModelType) {
         return this.blogsService.createBlog(inputModel);
     }
+
     @Put(':blogId')
     @HttpCode(204)
-    updateBlogByBlogId(
-        @Param('blogId') blogId,
-        @Body() updateModel: CreateBlogInputModelType,
-    ) {
+    @UseGuards(BasicAuthGuard)
+    updateBlogByBlogId(@Param('blogId') blogId, @Body() updateModel: UpdateBlogInputModelType) {
         return this.blogsService.updateBlogByBlogId(blogId, updateModel);
     }
+
     @Delete(':blogId')
     @HttpCode(204)
+    @UseGuards(BasicAuthGuard)
     async deleteBlogByBlogId(@Param('blogId') blogId: string) {
         const result = await this.blogsService.deleteBlogByBlogId(blogId);
         if (!result) {
@@ -58,27 +42,18 @@ export class BlogsController {
         }
         return;
     }
+
     @Get(':blogId/posts')
-    async getPostsByBlogId(
-        @Param('blogId') blogId: string,
-        @Query() postQueryPagination: PostPaginationQueryType,
-    ) {
+    async getPostsByBlogId(@Param('blogId') blogId: string, @Query() postQueryPagination: PostPaginationQueryType) {
         const queryData = getPostPaginationData(postQueryPagination);
-        const result = await this.postsService.getPostsByBlogId(
-            queryData,
-            blogId,
-        );
+        const result = await this.postsService.getPostsByBlogId(queryData, blogId);
         return result;
     }
+
     @Post(':blogId/posts')
-    async createPostsByBlogId(
-        @Body() inputModel: CreatePostInputModelType,
-        @Param('blogId') blogId: string,
-    ) {
-        const result = await this.postsService.createPostsByBlogId(
-            inputModel,
-            blogId,
-        );
+    @UseGuards(BasicAuthGuard)
+    async createPostsByBlogId(@Body() inputModel: CreatePostInputModelType, @Param('blogId') blogId: string) {
+        const result = await this.postsService.createPostsByBlogId(inputModel, blogId);
         return result;
     }
 }

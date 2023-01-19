@@ -2,21 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../schemas/postsSchema';
 import { Model } from 'mongoose';
-import { CreatePostInputModelType } from '../type/posts.type';
+import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
 
 @Injectable()
 export class PostsRepository {
-    constructor(
-        @InjectModel(Post.name) private PostsModel: Model<PostDocument>,
-    ) {}
+    constructor(@InjectModel(Post.name) private PostsModel: Model<PostDocument>) {}
     async getPosts(queryData): Promise<Post[] | any> {
         const userId = '';
         // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
         const totalCount = await this.PostsModel.countDocuments({});
         const page = Number(queryData.pageNumber);
-        const pagesCount = Number(
-            Math.ceil(Number(totalCount) / queryData.pageSize),
-        );
+        const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         const items = await this.PostsModel.aggregate([
             {
@@ -154,9 +150,7 @@ export class PostsRepository {
             blogId: blogId,
         });
         const page = Number(queryData.pageNumber);
-        const pagesCount = Number(
-            Math.ceil(Number(totalCount) / queryData.pageSize),
-        );
+        const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         const items = await this.PostsModel.aggregate([
             { $match: { blogId: blogId } },
@@ -291,7 +285,7 @@ export class PostsRepository {
         }
     }
 
-    async updatePostByPostId(postId, updateModel: CreatePostInputModelType) {
+    async updatePostByPostId(postId, updateModel: UpdatePostInputModelType) {
         const result = await this.PostsModel.updateOne(
             { id: postId },
             {

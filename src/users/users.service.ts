@@ -1,42 +1,76 @@
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { CreateUserInputModelType } from '../type/users.type';
+import { add } from 'date-fns';
+import { CreateUserInputModelType } from './UserDto';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository) {}
+    constructor(protected usersRepository: UsersRepository, protected jwtService: JwtService) {}
 
     async getUsers(queryData) {
         return await this.usersRepository.getUsers(queryData);
     }
+
     async getUserById(userId) {
-        const user = this.usersRepository.getUserById(userId);
+        const user = await this.usersRepository.getUserById(userId);
         if (!user) throw new NotFoundException();
         return user;
     }
+
+    async getUserByLoginOrEmail(loginOrEmail: string) {
+        const user = await this.usersRepository.getUserByLoginOrEmail(loginOrEmail);
+        if (!user) throw new UnauthorizedException();
+        return user;
+    }
+
+    async getUserIdByAccessToken(token: string) {
+        try {
+            const result: any = this.jwtService.verify(token, { secret: 'SecretKey' });
+            return result.userId;
+        } catch (error) {
+            return null;
+        }
+    }
+
     async createUser(inputModel: CreateUserInputModelType) {
+        const passwordHash = await this._generateHash(inputModel.password);
         const newUser = {
-            id: new Date().valueOf().toString(),
-            login: inputModel.login,
-            email: inputModel.email,
-            password: inputModel.password,
-            createdAt: new Date().toISOString(),
+            accountData: {
+                id: new Date().valueOf().toString(),
+                login: inputModel.login,
+                email: inputModel.email,
+                password: passwordHash,
+                createdAt: new Date().toISOString(),
+            },
+            emailConfirmation: {
+                confirmationCode: randomUUID(),
+                recoveryCode: randomUUID(),
+                expirationDate: add(new Date(), { hours: 1 }),
+                isConfirmed: false,
+            },
         };
         const result = await this.usersRepository.createUser({ ...newUser });
-        if (!result) throw new BadRequestException();
+        if (!result)
+            throw new BadRequestException({
+                message: 'Bad',
+                field: 'login or Password',
+            });
         return {
-            id: result.id,
-            login: result.login,
-            email: result.email,
-            createdAt: result.createdAt,
+            id: result.accountData.id,
+            login: result.accountData.login,
+            email: result.accountData.email,
+            createdAt: result.accountData.createdAt,
         };
     }
 
     async deleteUserById(userId: string) {
         return this.usersRepository.deleteUserById(userId);
+    }
+
+    _generateHash(password: string) {
+        return bcrypt.hash(password, 10);
     }
 }
