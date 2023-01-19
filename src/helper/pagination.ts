@@ -36,18 +36,9 @@ export const BlogPaginationData = (query: any): BlogPaginationQueryType => {
     const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
     return { searchNameTerm, pageSize, pageNumber, sortBy, sortDirection };
 };
-export type userType = {
-    accountData: {
-        id: string;
-        login: string;
-        password: string;
-        email: string;
-        createdAt: string;
-    };
-    emailConfirmation: {
-        confirmationCode: string;
-        expirationData: string;
-        recoveryCode: string;
-        isConfirmed: boolean;
-    };
+export type UserResponseType = {
+    id: string;
+    login: string;
+    email: string;
+    createdAt: string;
 };

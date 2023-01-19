@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/usersSchema';
 import { Model } from 'mongoose';
+import { UserDecorator } from '../decorators/user-param.decorator';
+import { UserResponseType } from '../helper/pagination';
 
 @Injectable()
 export class UsersRepository {
@@ -14,11 +16,12 @@ export class UsersRepository {
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         console.log(filter);
-        const items = await this.userModel
-            .find(filter, { _id: 0, __v: 0, password: 0 })
+        const result = await this.userModel
+            .find(filter, { _id: 0, __v: 0, 'accountData.password': 0, emailConfirmation: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize);
+        const items = this._mapUserDbToResponse(result);
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
@@ -102,5 +105,14 @@ export class UsersRepository {
     async updateUserRecoveryPasswordCodeByEmail(email: string, NewRecoveryCode: string) {
         const result = await this.userModel.updateOne({ 'accountData.email': email }, { $set: { 'emailConfirmation.recoveryCode': NewRecoveryCode } });
         return result.matchedCount === 1;
+    }
+
+    _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
+        return users.map((u) => ({
+            id: u.accountData.id,
+            login: u.accountData.login,
+            email: u.accountData.email,
+            createdAt: u.accountData.createdAt,
+        }));
     }
 }
