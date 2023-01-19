@@ -36,6 +36,7 @@ export const BlogPaginationData = (query: any): BlogPaginationQueryType => {
     const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
     return { searchNameTerm, pageSize, pageNumber, sortBy, sortDirection };
 };
+
 export type UserResponseType = {
     id: string;
     login: string;

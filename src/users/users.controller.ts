@@ -8,9 +8,9 @@ import { BasicAuthGuard } from '../guard/basicAuthGuard';
 export class UsersController {
     constructor(protected usersService: UsersService) {}
 
-    @Get() getUsers(@Query() usersQueryPagination: UsersPaginationQueryType) {
+    @Get() async getUsers(@Query() usersQueryPagination: UsersPaginationQueryType) {
         const queryData = UsersPaginationData(usersQueryPagination);
-        return this.usersService.getUsers(queryData);
+        return await this.usersService.getUsers(queryData);
     }
 
     @Get(':userId') getUser(@Param('userId') userId) {

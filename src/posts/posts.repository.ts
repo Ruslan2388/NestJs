@@ -133,7 +133,7 @@ export class PostsRepository {
                 },
             },
         ])
-            .sort({ [queryData.sortBy]: queryData.sortDirection })
+            .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
             .limit(pageSize);
         console.log(queryData);

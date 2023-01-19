@@ -15,13 +15,13 @@ export class UsersRepository {
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
-        console.log(queryData.sortBy, queryData.sortDirection, queryData.searchEmailTerm);
+        console.log({ [queryData.sortBy]: queryData.sortDirection });
         const result = await this.userModel
-            .find(filter, { _id: 0, __v: 0, 'accountData.password': 0, emailConfirmation: 0 })
+            .find(filter, { _id: 0, __v: 0, emailConfirmation: 0 })
+            .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
-            .limit(pageSize)
-            .sort({ [queryData.sortBy]: queryData.sortDirection });
-        console.log(result);
+            .limit(pageSize);
+
         const items = this._mapUserDbToResponse(result);
 
         return { pagesCount, page, pageSize, totalCount, items };
