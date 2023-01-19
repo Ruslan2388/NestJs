@@ -11,7 +11,9 @@ export class UsersRepository {
 
     async getUsers(queryData): Promise<User[] | any> {
         const filter = await this._getUsersFilterForQuery(queryData);
+        console.log(filter);
         const totalCount = await this.userModel.countDocuments(filter);
+        console.log(totalCount);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
@@ -81,25 +83,25 @@ export class UsersRepository {
     async _getUsersFilterForQuery(queryData) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
-                login: { $regex: queryData.searchLoginTerm, $options: 'i' },
+                'accountData.login': { $regex: queryData.searchLoginTerm, $options: 'i' },
             };
         }
         if (queryData.searchEmailTerm && !queryData.searchLoginTerm) {
             return {
-                email: { $regex: queryData.searchEmailTerm, $options: 'i' },
+                'emailConfirmation.email': { $regex: queryData.searchEmailTerm, $options: 'i' },
             };
         }
         if (queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
                 $or: [
                     {
-                        login: {
+                        'accountData.login': {
                             $regex: queryData.searchLoginTerm,
                             $options: 'i',
                         },
                     },
                     {
-                        email: {
+                        'emailConfirmation.email': {
                             $regex: queryData.searchEmailTerm,
                             $options: 'i',
                         },

@@ -78,10 +78,12 @@ export class AuthService {
             const sendEmail = await this.emailAdapter.sendEmail(email, 'Resending', newConfirmationCode);
             return sendEmail;
         } else
-            throw new BadRequestException({
-                message: 'Incorrect Email',
-                field: 'Email',
-            });
+            throw new BadRequestException([
+                {
+                    message: 'Incorrect Email',
+                    field: 'Email',
+                },
+            ]);
     }
 
     async passwordRecoveryConfirm(recoveryCode: string, newPassword: string) {
