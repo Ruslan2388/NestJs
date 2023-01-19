@@ -45,6 +45,7 @@ export class AuthController {
         await this.authService.addDevice(user.accountData.id, request.headers['user-agent'], request.ip, deviceId, time.iat, time.exp);
         response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
+            secure: true,
         });
         return { accessToken: accessToken };
     }
@@ -62,6 +63,7 @@ export class AuthController {
             response
                 .cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
+                    secure: true,
                 })
                 .send({ accessToken: newAccessToken })
                 .status(200);
