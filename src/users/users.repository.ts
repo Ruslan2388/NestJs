@@ -88,7 +88,7 @@ export class UsersRepository {
         }
         if (queryData.searchEmailTerm && !queryData.searchLoginTerm) {
             return {
-                'emailConfirmation.email': { $regex: queryData.searchEmailTerm, $options: 'i' },
+                'accountData.email': { $regex: queryData.searchEmailTerm, $options: 'i' },
             };
         }
         if (queryData.searchEmailTerm && queryData.searchLoginTerm) {
@@ -101,7 +101,7 @@ export class UsersRepository {
                         },
                     },
                     {
-                        'emailConfirmation.email': {
+                        'accountData.email': {
                             $regex: queryData.searchEmailTerm,
                             $options: 'i',
                         },
