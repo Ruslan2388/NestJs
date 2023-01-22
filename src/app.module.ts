@@ -25,8 +25,9 @@ import { IsEmailInInDB, IsLoginInDB } from './validator/registerValidator';
 import { EmailService } from './helper/email.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './helper/mail.config';
+import { ResendEmailValidator } from './validator/resendEmailValidator';
 
-const validators = [IsLoginInDB, IsEmailInInDB];
+const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
 const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService];
 
 @Module({

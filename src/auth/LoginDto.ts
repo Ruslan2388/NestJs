@@ -1,4 +1,5 @@
 import { IsEmail, Length } from 'class-validator';
+import { ResendEmailValidatorD } from '../decorators/resendEmail.decorator';
 
 export class LoginInputModelType {
     @Length(3, 10)
@@ -8,6 +9,7 @@ export class LoginInputModelType {
 }
 
 export class EmailInputModelType {
+    @ResendEmailValidatorD()
     @IsEmail({}, { message: 'Incorrect Email' })
     @Length(1, 40)
     email: string;

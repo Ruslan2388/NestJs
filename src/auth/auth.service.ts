@@ -81,7 +81,7 @@ export class AuthService {
             throw new BadRequestException([
                 {
                     message: 'Incorrect Email',
-                    field: 'Email',
+                    field: 'email',
                 },
             ]);
     }
@@ -100,7 +100,7 @@ export class AuthService {
         if (updateIsConfirmed) {
             return true;
         }
-        throw new BadRequestException([{ message: 'Incorrect confirmedCode', field: 'confirmedCode' }]);
+        throw new BadRequestException([{ message: 'Incorrect confirmedCode', field: 'code' }]);
     }
 
     async passwordRecovery(email: string) {
