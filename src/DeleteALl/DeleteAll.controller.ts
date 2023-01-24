@@ -4,6 +4,7 @@ import { UsersRepository } from '../users/users.repository';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { AuthRepository } from '../auth/auth.repository';
+import { CommentsRepository } from '../comments/comments.repository';
 
 @Controller('testing/all-data')
 export class DeleteAllController {
@@ -12,6 +13,7 @@ export class DeleteAllController {
         protected blogsRepository: BlogsRepository,
         protected postsRepository: PostsRepository,
         protected authRepository: AuthRepository,
+        protected commentsRepository: CommentsRepository,
     ) {}
 
     @Delete()
@@ -21,5 +23,7 @@ export class DeleteAllController {
         await this.usersRepository.deleteAllUsers();
         await this.blogsRepository.deleteAllBlogs();
         await this.authRepository.deleteAllDevice();
+        await this.commentsRepository.deleteAllComments();
+        await this.commentsRepository.deleteAllLikes();
     }
 }

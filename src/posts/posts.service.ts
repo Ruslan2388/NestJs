@@ -117,4 +117,9 @@ export class PostsService {
     async deletePostById(postId: string) {
         return this.postsRepository.deletePostById(postId);
     }
+
+    createLikeByPost(postId, userId: string, likeStatus: string, login: string) {
+        const createdAt = new Date().toISOString();
+        return this.postsRepository.createLikeByPost(postId, userId, likeStatus, login, createdAt);
+    }
 }

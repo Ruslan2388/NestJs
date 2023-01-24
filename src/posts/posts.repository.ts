@@ -3,10 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../schemas/postsSchema';
 import { Model } from 'mongoose';
 import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
+import { Like, LikeDocument } from '../schemas/likeSchema';
 
 @Injectable()
 export class PostsRepository {
-    constructor(@InjectModel(Post.name) private PostsModel: Model<PostDocument>) {}
+    constructor(@InjectModel(Post.name) private PostsModel: Model<PostDocument>, @InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
     async getPosts(queryData): Promise<Post[] | any> {
         const userId = '';
         // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
@@ -305,5 +306,27 @@ export class PostsRepository {
 
     async deleteAllPosts() {
         return this.PostsModel.deleteMany({});
+    }
+
+    async createLikeByPost(postId, userId: string, likeStatus: string, login: string, createdAt: string) {
+        await this.LikeModel.updateOne(
+            { parentId: postId, userId: userId },
+            {
+                status: likeStatus,
+                login: login,
+                createdAt: createdAt,
+            },
+            { upsert: true },
+        );
+        const likesCount = await this.LikeModel.countDocuments({ parentId: postId, status: 'Like' });
+        const dislikesCount = await this.LikeModel.countDocuments({ parentId: postId, status: 'Dislike' });
+        await this.PostsModel.updateOne(
+            { id: postId },
+            {
+                'extendedLikesInfo.likesCount': likesCount,
+                'extendedLikesInfo.dislikesCount': dislikesCount,
+            },
+        );
+        return true;
     }
 }

@@ -1,12 +1,20 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostInputModelType, PostPaginationQueryType, UpdatePostInputModelType } from './PostDto';
 import { getPostPaginationData } from '../helper/pagination';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
+import { AccessTokenGuard } from '../guard/authMeGuard';
+import { UserDecorator } from '../decorators/user-param.decorator';
+import { User } from '../schemas/usersSchema';
+import { CommentsPaginationData, CommentsPaginationQueryType, CreateCommentsInputModel, UpdateCommentsInputModel } from '../comments/CommentsDto';
+import { CommentsService } from '../comments/comments.service';
+import { Request } from 'express';
+import { UsersService } from '../users/users.service';
+import { LikeInputModel } from '../like/likeDto';
 
 @Controller('posts')
 export class PostsController {
-    constructor(protected postsService: PostsService) {}
+    constructor(protected postsService: PostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
 
     @Get() getPosts(@Query() postQueryPagination: PostPaginationQueryType) {
         const queryData = getPostPaginationData(postQueryPagination);
@@ -38,5 +46,37 @@ export class PostsController {
         if (!result) {
             throw new NotFoundException();
         }
+    }
+
+    @Get(':postId/comments')
+    async getCommentByPostId(@Param('postId') postId, @Req() request: Request, @Query() commentsQueryPagination: CommentsPaginationQueryType) {
+        const post = await this.postsService.getPostById(postId);
+        if (!post) throw new NotFoundException();
+        const queryData = CommentsPaginationData(commentsQueryPagination);
+        let authUserId;
+        if (request.headers.authorization) {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await this.usersService.getUserIdByAccessToken(token);
+            if (userId) {
+                const user = await this.usersService.getUserById(userId);
+                authUserId = user.accountData.id;
+                return await this.commentsService.getCommentsByPostId(postId, authUserId, queryData);
+            }
+        }
+    }
+
+    @Post(':postId/comments')
+    @UseGuards(AccessTokenGuard)
+    async createComment(@Param('postId') postId, @UserDecorator() user: User, @Body() inputModel: CreateCommentsInputModel) {
+        return await this.commentsService.createCommentByPostId(inputModel.content, postId, user);
+    }
+
+    @Put(':postId/like-status')
+    @UseGuards(AccessTokenGuard)
+    async createLikeByPost(@Param('postId') postId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
+        const post = await this.commentsService.getCommentById(postId, user.accountData.id);
+        if (!post) throw new NotFoundException();
+        if (post.userId !== user.accountData.id) throw new UnauthorizedException();
+        return this.postsService.createLikeByPost(postId, user.accountData.id, inputModel.likeStatus, user.accountData.login);
     }
 }

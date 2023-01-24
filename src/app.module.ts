@@ -27,9 +27,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './helper/mail.config';
 import { ResendEmailValidator } from './validator/resendEmailValidator';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CommentsController } from './comments/comments.controller';
+import { CommentsRepository } from './comments/comments.repository';
+import { CommentsService } from './comments/comments.service';
+import { Comments, CommentsSchema } from './schemas/commentsSchema';
+import { Like, LikeSchema } from './schemas/likeSchema';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
-const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService];
+const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService, CommentsService];
 
 @Module({
     imports: [
@@ -49,9 +54,11 @@ const services = [AppService, UsersService, BlogsService, PostsService, AuthServ
             { name: Blog.name, schema: BlogSchema },
             { name: Post.name, schema: PostScheme },
             { name: Device.name, schema: DeviceSchema },
+            { name: Comments.name, schema: CommentsSchema },
+            { name: Like.name, schema: LikeSchema },
         ]),
     ],
-    controllers: [AppController, UsersController, BlogsController, DeleteAllController, PostsController, AuthController],
-    providers: [...services, PostsRepository, UsersRepository, BlogsRepository, AuthRepository, ...validators],
+    controllers: [AppController, UsersController, BlogsController, DeleteAllController, PostsController, AuthController, CommentsController],
+    providers: [...services, PostsRepository, UsersRepository, BlogsRepository, AuthRepository, CommentsRepository, ...validators],
 })
 export class AppModule {}
