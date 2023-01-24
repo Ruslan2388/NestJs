@@ -1,9 +1,9 @@
-import { IsUrl, Length } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateBlogInputModelType {
-    @Length(3, 15)
-    @Exclude()
+    @Length(1, 15)
+    @Transform(({ value }) => value?.trim())
     name: string;
     @Length(1, 500)
     description: string;
@@ -14,7 +14,7 @@ export class CreateBlogInputModelType {
 
 export class UpdateBlogInputModelType {
     @Length(3, 15)
-    @Exclude()
+    @Transform(({ value }) => value?.trim())
     name: string;
     @Length(1, 500)
     description: string;
