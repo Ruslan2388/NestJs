@@ -54,7 +54,7 @@ export class UsersService {
             },
         };
         const result = await this.usersRepository.createUser({ ...newUser });
-        this.emailService.sendEmail(newUser.accountData.email, 'Registr', newUser.emailConfirmation.confirmationCode);
+        await this.emailService.sendEmail(newUser.accountData.email, 'Registr', newUser.emailConfirmation.confirmationCode);
         if (!result)
             throw new BadRequestException({
                 message: 'Bad',
