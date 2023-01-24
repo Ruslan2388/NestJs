@@ -1,4 +1,4 @@
-import { Length } from 'class-validator';
+import { IsUrl, Length } from 'class-validator';
 
 export class CreateBlogInputModelType {
     @Length(3, 15)
@@ -6,6 +6,7 @@ export class CreateBlogInputModelType {
     @Length(1, 500)
     description: string;
     @Length(1, 500)
+    @IsUrl()
     websiteUrl: string;
 }
 
@@ -15,6 +16,7 @@ export class UpdateBlogInputModelType {
     @Length(1, 500)
     description: string;
     @Length(1, 500)
+    @IsUrl()
     websiteUrl: string;
 }
 

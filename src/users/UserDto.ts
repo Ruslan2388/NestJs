@@ -2,7 +2,6 @@ import { IsEmail, IsString, Length } from 'class-validator';
 import { IsEmailInDb, IsLoginInDb } from '../decorators/registerDecorator';
 
 export class CreateUserInputModelType {
-    // @Validate(IsLoginInDB)
     @IsLoginInDb()
     @Length(3, 10)
     @IsString()
