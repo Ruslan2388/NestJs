@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
-import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
+import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
 import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Injectable()
@@ -64,7 +64,7 @@ export class PostsService {
         throw new NotFoundException();
     }
 
-    async createPostsByBlogId(inputModel: CreatePostInputModelType, blogId: string) {
+    async createPostsByBlogId(inputModel: CreatePostByBlogIdInputModelType, blogId: string) {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) {
             throw new NotFoundException();
