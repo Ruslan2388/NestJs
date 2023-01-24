@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post
 import { BlogsService } from './blogs.service';
 import { BlogPaginationQueryType, CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { PostsService } from '../posts/posts.service';
-import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, PostPaginationQueryType } from '../posts/PostDto';
+import { CreatePostByBlogIdInputModelType, PostPaginationQueryType } from '../posts/PostDto';
 import { BlogPaginationData, getPostPaginationData } from '../helper/pagination';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 

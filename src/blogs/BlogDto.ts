@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
+import { IsUrl, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateBlogInputModelType {
