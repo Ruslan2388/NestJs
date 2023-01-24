@@ -16,9 +16,19 @@ import { LikeInputModel } from '../like/likeDto';
 export class PostsController {
     constructor(protected postsService: PostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
 
-    @Get() getPosts(@Query() postQueryPagination: PostPaginationQueryType) {
-        const queryData = getPostPaginationData(postQueryPagination);
-        return this.postsService.getPosts(queryData, '');
+    @Get()
+    async getPosts(@Query() postQueryPagination: PostPaginationQueryType, @Req() request: Request) {
+        let authUserId;
+        if (request.headers.authorization) {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await this.usersService.getUserIdByAccessToken(token);
+            if (userId) {
+                const user = await this.usersService.getUserById(userId);
+                authUserId = user.accountData.id;
+                const queryData = getPostPaginationData(postQueryPagination);
+                return this.postsService.getPosts(queryData, authUserId);
+            }
+        }
     }
 
     @Get(':postId') getPostById(@Param('postId') postId) {
@@ -72,6 +82,7 @@ export class PostsController {
     }
 
     @Put(':postId/like-status')
+    @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async createLikeByPost(@Param('postId') postId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
         const post = await this.postsService.getPostById(postId, user.accountData.id);
