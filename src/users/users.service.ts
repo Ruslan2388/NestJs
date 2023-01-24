@@ -53,7 +53,6 @@ export class UsersService {
                 isConfirmed: false,
             },
         };
-        await this.emailService.sendEmail(newUser.accountData.email, 'Registr', newUser.emailConfirmation.confirmationCode);
         const result = await this.usersRepository.createUser({ ...newUser });
         if (!result)
             throw new BadRequestException({
