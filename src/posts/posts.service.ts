@@ -3,16 +3,21 @@ import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
 import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
 import { BlogsRepository } from '../blogs/blogs.repository';
+import { NewestLikesType } from '../helper/pagination';
 
 @Injectable()
 export class PostsService {
     constructor(protected postsRepository: PostsRepository, protected blogsRepository: BlogsRepository) {}
-    getPosts(queryData) {
-        return this.postsRepository.getPosts(queryData);
+    getPosts(queryData, userId) {
+        return this.postsRepository.getPosts(queryData, userId);
     }
-    async getPostById(postId: string): Promise<Post | null> {
+    async getPostById(postId: string, userId: string | null): Promise<Post | null> {
         const post = await this.postsRepository.getPostsById(postId);
         if (!post) throw new NotFoundException();
+        const likeByPost = await this.postsRepository.likeByPost(userId, postId);
+        const like = likeByPost.like;
+        const newestLikes: NewestLikesType[] = likeByPost.newestLikes;
+
         return post;
     }
     async getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {

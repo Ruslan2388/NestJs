@@ -43,3 +43,8 @@ export type UserResponseType = {
     email: string;
     createdAt: string;
 };
+export type NewestLikesType = {
+    addedAt: string;
+    userId: string;
+    login: string;
+};

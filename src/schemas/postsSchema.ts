@@ -2,11 +2,17 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type PostDocument = Post & Document;
 
+class NewestLikesType {
+    addedAt: string;
+    userId: string;
+    login: string;
+}
+
 class extendedLikesInfo {
     likesCount: number;
     dislikesCount: number;
     myStatus: 'Like' | 'Dislike' | 'None';
-    newestLikes: [addedAt: string, userId: string, login: string];
+    newestLikes: NewestLikesType[];
 }
 
 @Schema()

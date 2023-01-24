@@ -18,11 +18,11 @@ export class PostsController {
 
     @Get() getPosts(@Query() postQueryPagination: PostPaginationQueryType) {
         const queryData = getPostPaginationData(postQueryPagination);
-        return this.postsService.getPosts(queryData);
+        return this.postsService.getPosts(queryData, '');
     }
 
     @Get(':postId') getPostById(@Param('postId') postId) {
-        return this.postsService.getPostById(postId);
+        return this.postsService.getPostById(postId, '');
     }
 
     @Post()
@@ -50,7 +50,7 @@ export class PostsController {
 
     @Get(':postId/comments')
     async getCommentByPostId(@Param('postId') postId, @Req() request: Request, @Query() commentsQueryPagination: CommentsPaginationQueryType) {
-        const post = await this.postsService.getPostById(postId);
+        const post = await this.postsService.getPostById(postId, '');
         if (!post) throw new NotFoundException();
         const queryData = CommentsPaginationData(commentsQueryPagination);
         let authUserId;
@@ -74,9 +74,9 @@ export class PostsController {
     @Put(':postId/like-status')
     @UseGuards(AccessTokenGuard)
     async createLikeByPost(@Param('postId') postId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
-        const post = await this.commentsService.getCommentById(postId, user.accountData.id);
+        const post = await this.postsService.getPostById(postId, user.accountData.id);
+        console.log(user.accountData.id, 'asdasdasdasdasd');
         if (!post) throw new NotFoundException();
-        if (post.userId !== user.accountData.id) throw new UnauthorizedException();
         return this.postsService.createLikeByPost(postId, user.accountData.id, inputModel.likeStatus, user.accountData.login);
     }
 }

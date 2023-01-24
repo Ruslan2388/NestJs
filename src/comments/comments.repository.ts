@@ -98,7 +98,7 @@ export class CommentsRepository {
             { $unwind: '$likesInfo.dislikesCount' },
             { $unwind: '$likesInfo.myStatus' },
         ]);
-        console.log(items[0]);
+        console.log(items);
         return items[0];
     }
 

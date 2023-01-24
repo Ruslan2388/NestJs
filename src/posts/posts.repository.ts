@@ -4,13 +4,13 @@ import { Post, PostDocument } from '../schemas/postsSchema';
 import { Model } from 'mongoose';
 import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
 import { Like, LikeDocument } from '../schemas/likeSchema';
+import { NewestLikesType } from '../helper/pagination';
 
 @Injectable()
 export class PostsRepository {
     constructor(@InjectModel(Post.name) private PostsModel: Model<PostDocument>, @InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
-    async getPosts(queryData): Promise<Post[] | any> {
-        const userId = '';
-        // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
+
+    async getPosts(queryData, userId: string): Promise<Post[] | any> {
         const totalCount = await this.PostsModel.countDocuments({});
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
@@ -20,43 +20,7 @@ export class PostsRepository {
                 $lookup: {
                     from: 'likes',
                     localField: 'id',
-                    foreignField: 'postId',
-                    pipeline: [
-                        {
-                            $match: {
-                                status: 'Like',
-                            },
-                        },
-                        {
-                            $count: 'count',
-                        },
-                    ],
-                    as: 'likesCount',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'likes',
-                    localField: 'id',
-                    foreignField: 'postId',
-                    pipeline: [
-                        {
-                            $match: {
-                                status: 'Dislike',
-                            },
-                        },
-                        {
-                            $count: 'count',
-                        },
-                    ],
-                    as: 'dislikesCount',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'likes',
-                    localField: 'id',
-                    foreignField: 'postId',
+                    foreignField: 'parentId',
                     pipeline: [
                         {
                             $match: { userId: userId },
@@ -72,7 +36,7 @@ export class PostsRepository {
                 $lookup: {
                     from: 'likes',
                     localField: 'id',
-                    foreignField: 'postId',
+                    foreignField: 'parentId',
                     pipeline: [
                         {
                             $match: {
@@ -81,7 +45,7 @@ export class PostsRepository {
                         },
                         {
                             $sort: {
-                                addedAt: -1,
+                                createdAt: -1,
                             },
                         },
                         {
@@ -89,7 +53,7 @@ export class PostsRepository {
                         },
                         {
                             $project: {
-                                addedAt: 1,
+                                addedAt: '$createdAt',
                                 login: 1,
                                 userId: 1,
                                 _id: 0,
@@ -109,20 +73,8 @@ export class PostsRepository {
                     blogId: 1,
                     blogName: 1,
                     createdAt: 1,
-                    'extendedLikesInfo.likesCount': {
-                        $cond: {
-                            if: { $eq: [{ $size: '$likesCount' }, 0] },
-                            then: 0,
-                            else: '$likesCount.count',
-                        },
-                    },
-                    'extendedLikesInfo.dislikesCount': {
-                        $cond: {
-                            if: { $eq: [{ $size: '$dislikesCount' }, 0] },
-                            then: 0,
-                            else: '$dislikesCount.count',
-                        },
-                    },
+                    'extendedLikesInfo.likesCount': 1,
+                    'extendedLikesInfo.dislikesCount': 1,
                     'extendedLikesInfo.myStatus': {
                         $cond: {
                             if: { $eq: [{ $size: '$myStatus' }, 0] },
@@ -133,17 +85,19 @@ export class PostsRepository {
                     'extendedLikesInfo.newestLikes': '$newestLikes',
                 },
             },
+            { $unwind: '$extendedLikesInfo.myStatus' },
         ])
             .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
             .limit(pageSize);
-        console.log(queryData);
+
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
     async getPostsById(postId: string): Promise<Post | null> {
         return this.PostsModel.findOne({ id: postId }, { _id: 0, __v: 0 });
     }
+    //{ $match: { blogId: blogId } },
     async getPostsByBlogId(queryData, blogId): Promise<Post[] | any> {
         const userId = '';
         // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
@@ -159,43 +113,7 @@ export class PostsRepository {
                 $lookup: {
                     from: 'likes',
                     localField: 'id',
-                    foreignField: 'postId',
-                    pipeline: [
-                        {
-                            $match: {
-                                status: 'Like',
-                            },
-                        },
-                        {
-                            $count: 'count',
-                        },
-                    ],
-                    as: 'likesCount',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'likes',
-                    localField: 'id',
-                    foreignField: 'postId',
-                    pipeline: [
-                        {
-                            $match: {
-                                status: 'Dislike',
-                            },
-                        },
-                        {
-                            $count: 'count',
-                        },
-                    ],
-                    as: 'dislikesCount',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'likes',
-                    localField: 'id',
-                    foreignField: 'postId',
+                    foreignField: 'parentId',
                     pipeline: [
                         {
                             $match: { userId: userId },
@@ -211,7 +129,7 @@ export class PostsRepository {
                 $lookup: {
                     from: 'likes',
                     localField: 'id',
-                    foreignField: 'postId',
+                    foreignField: 'parentId',
                     pipeline: [
                         {
                             $match: {
@@ -220,7 +138,7 @@ export class PostsRepository {
                         },
                         {
                             $sort: {
-                                addedAt: -1,
+                                createdAt: -1,
                             },
                         },
                         {
@@ -228,7 +146,7 @@ export class PostsRepository {
                         },
                         {
                             $project: {
-                                addedAt: 1,
+                                addedAt: '$createdAt',
                                 login: 1,
                                 userId: 1,
                                 _id: 0,
@@ -248,20 +166,8 @@ export class PostsRepository {
                     blogId: 1,
                     blogName: 1,
                     createdAt: 1,
-                    'extendedLikesInfo.likesCount': {
-                        $cond: {
-                            if: { $eq: [{ $size: '$likesCount' }, 0] },
-                            then: 0,
-                            else: '$likesCount.count',
-                        },
-                    },
-                    'extendedLikesInfo.dislikesCount': {
-                        $cond: {
-                            if: { $eq: [{ $size: '$dislikesCount' }, 0] },
-                            then: 0,
-                            else: '$dislikesCount.count',
-                        },
-                    },
+                    'extendedLikesInfo.likesCount': 1,
+                    'extendedLikesInfo.dislikesCount': 1,
                     'extendedLikesInfo.myStatus': {
                         $cond: {
                             if: { $eq: [{ $size: '$myStatus' }, 0] },
@@ -272,6 +178,7 @@ export class PostsRepository {
                     'extendedLikesInfo.newestLikes': '$newestLikes',
                 },
             },
+            { $unwind: '$extendedLikesInfo.myStatus' },
         ])
             .sort({ [queryData.sortBy]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
@@ -328,5 +235,15 @@ export class PostsRepository {
             },
         );
         return true;
+    }
+
+    async likeByPost(userId: string, postId: string) {
+        const newestLikes: NewestLikesType[] = await this.LikeModel.find({ parentId: postId, status: 'Like' }, { _id: 0, userId: 1, login: 1, addedAt: '$createdAt' })
+            .sort({ createdAt: -1 })
+            .limit(3)
+            .lean();
+        const like = await this.LikeModel.findOne({ userId: userId, parentId: postId });
+
+        return { newestLikes, like };
     }
 }
