@@ -96,6 +96,10 @@ export class AuthService {
     }
 
     async registrationConfirm(code: string) {
+        const user = await this.usersRepository.getUserByConfirmationCode(code);
+        if (user === null) throw new BadRequestException([{ message: 'Incorrect confirmationCode', field: 'code' }]);
+        if (user?.emailConfirmation.confirmationCode !== code || user?.emailConfirmation.isConfirmed === true)
+            throw new BadRequestException([{ message: 'Incorrect confirmationCode', field: 'code' }]);
         const updateIsConfirmed = await this.usersRepository.updateCheckConfirmCode(code);
         if (updateIsConfirmed) {
             return true;

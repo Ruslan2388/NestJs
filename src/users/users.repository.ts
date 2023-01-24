@@ -39,6 +39,10 @@ export class UsersRepository {
         );
     }
 
+    async getUserByConfirmationCode(code: string) {
+        return this.userModel.findOne({ 'emailConfirmation.confirmationCode': code }, { _id: 0, __v: 0, password: 0 });
+    }
+
     async createUser(newUser): Promise<User | null> {
         try {
             return this.userModel.create(newUser);
