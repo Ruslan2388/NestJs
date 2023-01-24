@@ -11,13 +11,10 @@ export class UsersRepository {
 
     async getUsers(queryData): Promise<User[] | any> {
         const filter = await this._getUsersFilterForQuery(queryData);
-        console.log(filter);
         const totalCount = await this.userModel.countDocuments(filter);
-        console.log(totalCount);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
-        console.log({ [queryData.sortBy]: queryData.sortDirection });
         const result = await this.userModel
             .find(filter, { _id: 0, __v: 0, emailConfirmation: 0 })
             .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })

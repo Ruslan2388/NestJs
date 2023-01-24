@@ -10,14 +10,11 @@ export class ResendEmailValidator implements ValidatorConstraintInterface {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
     async validate(email: string) {
         try {
-            console.log(email);
             const user = await this.userModel.findOne({
                 'accountData.email': email,
             });
-            console.log(user);
             return user.emailConfirmation.isConfirmed === false;
         } catch (e) {
-            console.log(e);
             return false;
         }
     }

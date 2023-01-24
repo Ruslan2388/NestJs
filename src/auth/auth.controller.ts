@@ -3,13 +3,13 @@ import { AuthService } from './auth.service';
 import { CreateUserInputModelType } from '../users/UserDto';
 import { UsersService } from '../users/users.service';
 import { EmailInputModelType, LoginInputModelType, PasswordInputModelType } from './LoginDto';
-import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { AccessTokenGuard, RefreshTokenGuard } from '../guard/authMeGuard';
 import { User } from '../schemas/usersSchema';
 import { UserDecorator } from '../decorators/user-param.decorator';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -22,12 +22,14 @@ export class AuthController {
         return { email: user.accountData.email, userId: user.accountData.id, login: user.accountData.login };
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('registration')
     @HttpCode(204)
     async register(@Body() inputModel: CreateUserInputModelType) {
         return this.usersService.createUser(inputModel);
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('login')
     @HttpCode(200)
     async login(@Res({ passthrough: true }) response: Response, @Req() request: Request, @Body() inputModel: LoginInputModelType) {
@@ -83,6 +85,7 @@ export class AuthController {
         return this.authService.logout(userId, refreshToken);
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('registration-email-resending')
     @HttpCode(204)
     async registrationEmailResending(@Body() email: EmailInputModelType) {
@@ -90,6 +93,7 @@ export class AuthController {
         return resendingEmail;
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('new-password')
     @HttpCode(204)
     async newPassword(@Body() newPassword: PasswordInputModelType, @Body('recoveryCode') recoveryCode: string) {
@@ -102,6 +106,7 @@ export class AuthController {
         return await this.authService.registrationConfirm(code);
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('password-recovery')
     @HttpCode(204)
     async passwordRecovery(@Body() email: EmailInputModelType) {

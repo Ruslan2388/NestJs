@@ -26,6 +26,7 @@ import { EmailService } from './helper/email.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './helper/mail.config';
 import { ResendEmailValidator } from './validator/resendEmailValidator';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
 const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService];
@@ -36,6 +37,10 @@ const services = [AppService, UsersService, BlogsService, PostsService, AuthServ
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: getMailConfig,
+        }),
+        ThrottlerModule.forRoot({
+            ttl: 10,
+            limit: 5,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(process.env.MONGO_URI),
