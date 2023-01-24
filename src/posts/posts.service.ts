@@ -17,8 +17,7 @@ export class PostsService {
         const likeByPost = await this.postsRepository.likeByPost(userId, postId);
         const likeStatus = likeByPost.like.status;
         const newestLikes: NewestLikesType[] = likeByPost.newestLikes;
-        if (likeStatus) {
-            // @ts-ignore
+        if (likeStatus === 'Like' || likeStatus === 'Dislike' || likeStatus === 'None') {
             post.extendedLikesInfo.myStatus = likeStatus;
         }
         post.extendedLikesInfo.newestLikes = newestLikes;
