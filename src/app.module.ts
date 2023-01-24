@@ -39,7 +39,7 @@ const services = [AppService, UsersService, BlogsService, PostsService, AuthServ
             useFactory: getMailConfig,
         }),
         ThrottlerModule.forRoot({
-            ttl: 10,
+            ttl: 60,
             limit: 5,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
