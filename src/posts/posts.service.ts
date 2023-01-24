@@ -14,11 +14,16 @@ export class PostsService {
     async getPostById(postId: string, userId: string | null): Promise<Post | null> {
         const post = await this.postsRepository.getPostsById(postId);
         if (!post) throw new NotFoundException();
+
         const likeByPost = await this.postsRepository.likeByPost(userId, postId);
-        const likeStatus = likeByPost.like.status;
+
+        const like = likeByPost.like;
+
         const newestLikes: NewestLikesType[] = likeByPost.newestLikes;
-        if (likeStatus === 'Like' || likeStatus === 'Dislike' || likeStatus === 'None') {
-            post.extendedLikesInfo.myStatus = likeStatus;
+        if (like != null) {
+            if (like.status === 'Like' || like.status === 'Dislike' || like.status === 'None') {
+                post.extendedLikesInfo.myStatus = like.status;
+            }
         }
         post.extendedLikesInfo.newestLikes = newestLikes;
         return post;
