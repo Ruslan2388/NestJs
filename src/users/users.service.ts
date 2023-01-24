@@ -5,10 +5,11 @@ import { CreateUserInputModelType } from './UserDto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
+import { EmailService } from '../helper/email.service';
 
 @Injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository, protected jwtService: JwtService) {}
+    constructor(protected usersRepository: UsersRepository, protected jwtService: JwtService, protected emailService: EmailService) {}
 
     async getUsers(queryData) {
         return await this.usersRepository.getUsers(queryData);
@@ -52,6 +53,7 @@ export class UsersService {
                 isConfirmed: false,
             },
         };
+        await this.emailService.sendEmail(newUser.accountData.email, 'Registr', newUser.emailConfirmation.confirmationCode);
         const result = await this.usersRepository.createUser({ ...newUser });
         if (!result)
             throw new BadRequestException({
