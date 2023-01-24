@@ -18,7 +18,8 @@ export class PostsController {
 
     @Get()
     async getPosts(@Query() postQueryPagination: PostPaginationQueryType, @Req() request: Request) {
-        let authUserId;
+        let authUserId = '';
+        const queryData = getPostPaginationData(postQueryPagination);
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
@@ -26,13 +27,25 @@ export class PostsController {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
                 const queryData = getPostPaginationData(postQueryPagination);
-                return this.postsService.getPosts(queryData, authUserId);
+                return await this.postsService.getPosts(queryData, authUserId);
             }
         }
+        return await this.postsService.getPosts(queryData, authUserId);
     }
 
-    @Get(':postId') getPostById(@Param('postId') postId) {
-        return this.postsService.getPostById(postId, '');
+    @Get(':postId')
+    async getPostById(@Param('postId') postId, @Req() request: Request) {
+        let authUserId = '';
+        if (request.headers.authorization) {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await this.usersService.getUserIdByAccessToken(token);
+            if (userId) {
+                const user = await this.usersService.getUserById(userId);
+                authUserId = user.accountData.id;
+                return this.postsService.getPostById(postId, authUserId);
+            }
+        }
+        return this.postsService.getPostById(postId, authUserId);
     }
 
     @Post()

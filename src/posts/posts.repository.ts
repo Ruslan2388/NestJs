@@ -208,6 +208,7 @@ export class PostsRepository {
 
     async deletePostById(postId: string): Promise<number> {
         const result = await this.PostsModel.deleteOne({ id: postId });
+        console.log(result.deletedCount);
         return result.deletedCount;
     }
 

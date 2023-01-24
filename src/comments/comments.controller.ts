@@ -51,6 +51,10 @@ export class CommentsController {
         const comment = await this.commentsService.getCommentById(commentId, user.accountData.id);
         if (!comment) throw new NotFoundException();
         if (comment.userId !== user.accountData.id) throw new UnauthorizedException();
-        return await this.commentsService.deleteComment(commentId);
+        const result = await this.commentsService.deleteComment(commentId);
+        if (!result) {
+            throw new NotFoundException();
+        }
+        return result;
     }
 }

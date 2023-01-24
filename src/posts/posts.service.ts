@@ -15,9 +15,13 @@ export class PostsService {
         const post = await this.postsRepository.getPostsById(postId);
         if (!post) throw new NotFoundException();
         const likeByPost = await this.postsRepository.likeByPost(userId, postId);
-        const like = likeByPost.like;
+        const likeStatus = likeByPost.like.status;
         const newestLikes: NewestLikesType[] = likeByPost.newestLikes;
-
+        if (likeStatus) {
+            // @ts-ignore
+            post.extendedLikesInfo.myStatus = likeStatus;
+        }
+        post.extendedLikesInfo.newestLikes = newestLikes;
         return post;
     }
     async getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {
