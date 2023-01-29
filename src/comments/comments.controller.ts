@@ -18,10 +18,14 @@ export class CommentsController {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
             if (userId) {
-                return await this.commentsService.getCommentById(commentId, userId);
+                const comment = await this.commentsService.getCommentById(commentId, userId);
+                if (!comment) throw new NotFoundException();
+                return comment;
             }
         }
-        return await this.commentsService.getCommentById(commentId, null);
+        const comment = await this.commentsService.getCommentById(commentId, null);
+        if (!comment) throw new NotFoundException();
+        return comment;
     }
 
     @Put(':commentId')
@@ -41,7 +45,6 @@ export class CommentsController {
         const comment = await this.commentsService.getCommentById(commentId, user.accountData.id);
         if (!comment) throw new NotFoundException();
         console.log(user.accountData.id);
-        if (comment.commentatorInfo.userId !== user.accountData.id) throw new ForbiddenException();
         return await this.commentsService.createLikeByComment(commentId, user.accountData.id, inputModel.likeStatus);
     }
 

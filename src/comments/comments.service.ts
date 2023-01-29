@@ -9,17 +9,6 @@ export class CommentsService {
     constructor(protected commentsRepository: CommentsRepository, protected postsRepository: PostsRepository) {}
     async getCommentById(commentId: string, userId: string) {
         return await this.commentsRepository.getCommentById(commentId, userId);
-        // const comment = await this.commentsRepository.getCommentById(commentId, userId);
-        // return {
-        //     id: comment.id,
-        //     content: comment.content,
-        //     commentatorInfo: {
-        //         userId: comment.userId,
-        //         userLogin: comment.userLogin,
-        //     },
-        //     createdAt: comment.createdAt,
-        //     likesInfo: comment.likesInfo,
-        // };
     }
 
     async getCommentsByPostId(postId: string, userId: string, queryData: CommentsPaginationQueryType) {

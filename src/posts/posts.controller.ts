@@ -11,6 +11,7 @@ import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { LikeInputModel } from '../like/likeDto';
+import { use } from 'passport';
 
 @Controller('posts')
 export class PostsController {
@@ -78,6 +79,7 @@ export class PostsController {
         if (!post) throw new NotFoundException();
         const queryData = CommentsPaginationData(commentsQueryPagination);
         let authUserId;
+
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
@@ -86,6 +88,7 @@ export class PostsController {
                 authUserId = user.accountData.id;
                 return await this.commentsService.getCommentsByPostId(postId, authUserId, queryData);
             }
+            return await this.commentsService.getCommentsByPostId(postId, null, queryData);
         }
     }
 
