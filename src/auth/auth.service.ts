@@ -11,11 +11,11 @@ export class AuthService {
     constructor(protected authRepository: AuthRepository, private jwtService: JwtService, protected usersRepository: UsersRepository, protected emailAdapter: EmailService) {}
 
     async createAccessToken(userId: string, deviceId: string) {
-        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '40min' });
+        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '10s' });
     }
 
     async createRefreshToken(userId: string, deviceId: string) {
-        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '60m' });
+        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '20s' });
     }
 
     async addDevice(userId: string, userAgent: string, ip: string, deviceId: string, iat: Date, exp: Date) {
