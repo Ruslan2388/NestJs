@@ -6,7 +6,7 @@ export class EmailService {
     constructor(private readonly mailerService: MailerService) {}
     async sendEmail(email: string, subject: string, confirmationCode: string) {
         try {
-            await this.mailerService.sendMail({
+            this.mailerService.sendMail({
                 from: '"RUSEL" <heeca@mail.ru>', // sender address
                 to: email,
                 subject: subject,

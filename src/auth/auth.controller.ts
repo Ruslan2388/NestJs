@@ -100,6 +100,7 @@ export class AuthController {
         return await this.authService.passwordRecoveryConfirm(recoveryCode, newPassword.newPassword);
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('registration-confirmation')
     @HttpCode(204)
     async registrationConfirmation(@Body('code') code: string) {
