@@ -1,26 +1,11 @@
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Delete,
-    ForbiddenException,
-    Get,
-    HttpCode,
-    NotFoundException,
-    Param,
-    Put,
-    Query,
-    Req,
-    UnauthorizedException,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
-import { CreateCommentsInputModel, UpdateCommentsInputModel } from './CommentsDto';
+import { UpdateCommentsInputModel } from './CommentsDto';
 import { LikeInputModel } from '../like/likeDto';
 
 @Controller('comments')
@@ -45,7 +30,7 @@ export class CommentsController {
     async updateComment(@Param('commentId') commentId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: UpdateCommentsInputModel) {
         const comment = await this.commentsService.getCommentById(commentId, user.accountData.id);
         if (!comment) throw new NotFoundException();
-        if (comment.commentatorInfo.userId !== user.accountData.id) throw new UnauthorizedException();
+        if (comment.commentatorInfo.userId !== user.accountData.id) throw new ForbiddenException();
         return await this.commentsService.updateCommentById(commentId, inputModel.content, user.accountData.id);
     }
 
@@ -55,6 +40,7 @@ export class CommentsController {
     async createLikeByComment(@Param('commentId') commentId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
         const comment = await this.commentsService.getCommentById(commentId, user.accountData.id);
         if (!comment) throw new NotFoundException();
+        console.log(user.accountData.id);
         if (comment.commentatorInfo.userId !== user.accountData.id) throw new ForbiddenException();
         return await this.commentsService.createLikeByComment(commentId, user.accountData.id, inputModel.likeStatus);
     }
