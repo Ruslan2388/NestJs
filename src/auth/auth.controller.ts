@@ -47,7 +47,7 @@ export class AuthController {
         await this.authService.addDevice(user.accountData.id, request.headers['user-agent'], request.ip, deviceId, time.iat, time.exp);
         response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: false,
         });
         return { accessToken: accessToken };
     }
@@ -65,7 +65,7 @@ export class AuthController {
             response
                 .cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
-                    secure: true,
+                    secure: false,
                 })
                 .send({ accessToken: newAccessToken })
                 .status(200);
@@ -74,15 +74,6 @@ export class AuthController {
             return;
         }
         throw new UnauthorizedException();
-    }
-
-    @Post('logout')
-    @UseGuards(RefreshTokenGuard)
-    @HttpCode(204)
-    async logout(@Req() request: Request, @UserDecorator() user: User) {
-        const userId = user.accountData.id;
-        const refreshToken = request.cookies.refreshToken;
-        return this.authService.logout(userId, refreshToken);
     }
 
     @UseGuards(ThrottlerGuard)
@@ -112,5 +103,17 @@ export class AuthController {
     @HttpCode(204)
     async passwordRecovery(@Body() email: EmailInputModelType) {
         return await this.authService.passwordRecovery(email.email);
+    }
+
+    @Post('logout')
+    @UseGuards(RefreshTokenGuard)
+    @HttpCode(204)
+    async logout(@Req() request: Request, @UserDecorator() user: User) {
+        const refreshToken = request.cookies.refreshToken;
+        const payload = await this.authService.getPayload(refreshToken);
+        const checkRefreshToken = await this.authService.checkRefreshToken(payload.userId, payload.iat, payload.exp, payload.deviceId);
+        if (!checkRefreshToken) throw new UnauthorizedException();
+        const userId = user.accountData.id;
+        return this.authService.logout(userId, refreshToken);
     }
 }

@@ -68,6 +68,7 @@ export class AuthService {
 
     async logout(userId: string, refreshToken: any) {
         const payload = await this.getPayload(refreshToken);
+        console.log(payload);
         return await this.authRepository.DeleteDeviceByUserId(userId, payload.iat);
     }
 
