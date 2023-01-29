@@ -87,7 +87,7 @@ export class PostsRepository {
             },
             { $unwind: '$extendedLikesInfo.myStatus' },
         ])
-            .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
+            .sort({ [queryData.sortBy]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
             .limit(pageSize);
 
