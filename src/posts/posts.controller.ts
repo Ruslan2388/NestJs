@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostInputModelType, PostPaginationQueryType, UpdatePostInputModelType } from './PostDto';
 import { getPostPaginationData } from '../helper/pagination';
@@ -6,7 +6,7 @@ import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
-import { CommentsPaginationData, CommentsPaginationQueryType, CreateCommentsInputModel, UpdateCommentsInputModel } from '../comments/CommentsDto';
+import { CommentsPaginationData, CommentsPaginationQueryType, CreateCommentsInputModel } from '../comments/CommentsDto';
 import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';

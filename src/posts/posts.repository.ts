@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../schemas/postsSchema';
 import { Model } from 'mongoose';
-import { CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
+import { UpdatePostInputModelType } from './PostDto';
 import { Like, LikeDocument } from '../schemas/likeSchema';
 import { NewestLikesType } from '../helper/pagination';
 
