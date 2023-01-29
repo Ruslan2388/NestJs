@@ -16,8 +16,10 @@ export type CommentsType = {
     id: string;
     parentId: string;
     content: string;
-    userId: string;
-    userLogin: string;
+    commentatorInfo: {
+        userId: string;
+        userLogin: string;
+    };
     likesInfo: {
         likesCount: number;
         dislikesCount: number;

@@ -7,6 +7,10 @@ class likesInfo {
     dislikesCount: number;
     myStatus: 'Like' | 'Dislike' | 'None';
 }
+class commentatorInfo {
+    userId: string;
+    login: string;
+}
 
 @Schema()
 export class Comments {
@@ -17,11 +21,9 @@ export class Comments {
     @Prop()
     parentId: string;
     @Prop()
-    userId: string;
-    @Prop()
-    userLogin: string;
-    @Prop()
     createdAt: string;
+    @Prop()
+    commentatorInfo: commentatorInfo;
     @Prop()
     likesInfo: likesInfo;
 }

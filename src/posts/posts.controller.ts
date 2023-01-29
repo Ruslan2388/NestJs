@@ -39,6 +39,7 @@ export class PostsController {
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
+
             if (userId) {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
@@ -99,7 +100,6 @@ export class PostsController {
     @UseGuards(AccessTokenGuard)
     async createLikeByPost(@Param('postId') postId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
         const post = await this.postsService.getPostById(postId, user.accountData.id);
-        console.log(user.accountData.id, 'asdasdasdasdasd');
         if (!post) throw new NotFoundException();
         return this.postsService.createLikeByPost(postId, user.accountData.id, inputModel.likeStatus, user.accountData.login);
     }

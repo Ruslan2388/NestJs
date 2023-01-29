@@ -8,7 +8,18 @@ import { CommentsPaginationQueryType, CommentsType } from './CommentsDto';
 export class CommentsService {
     constructor(protected commentsRepository: CommentsRepository, protected postsRepository: PostsRepository) {}
     async getCommentById(commentId: string, userId: string) {
-        return this.commentsRepository.getCommentById(commentId, userId);
+        return await this.commentsRepository.getCommentById(commentId, userId);
+        // const comment = await this.commentsRepository.getCommentById(commentId, userId);
+        // return {
+        //     id: comment.id,
+        //     content: comment.content,
+        //     commentatorInfo: {
+        //         userId: comment.userId,
+        //         userLogin: comment.userLogin,
+        //     },
+        //     createdAt: comment.createdAt,
+        //     likesInfo: comment.likesInfo,
+        // };
     }
 
     async getCommentsByPostId(postId: string, userId: string, queryData: CommentsPaginationQueryType) {
@@ -21,8 +32,10 @@ export class CommentsService {
         const newComment: CommentsType = {
             id: (+new Date()).toString(),
             content: content,
-            userId: user.accountData.id,
-            userLogin: user.accountData.login,
+            commentatorInfo: {
+                userId: user.accountData.id,
+                userLogin: user.accountData.login,
+            },
             parentId: postId,
             likesInfo: {
                 likesCount: 0,
@@ -31,6 +44,7 @@ export class CommentsService {
             },
             createdAt: new Date().toISOString(),
         };
+        console.log(newComment);
         await this.commentsRepository.createComments(newComment);
         delete newComment.parentId;
         return newComment;

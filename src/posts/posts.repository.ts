@@ -97,7 +97,7 @@ export class PostsRepository {
     async getPostsById(postId: string): Promise<Post | null> {
         return this.PostsModel.findOne({ id: postId }, { _id: 0, __v: 0 });
     }
-    //{ $match: { blogId: blogId } },
+
     async getPostsByBlogId(queryData, blogId): Promise<Post[] | any> {
         const userId = '';
         // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
@@ -208,7 +208,6 @@ export class PostsRepository {
 
     async deletePostById(postId: string): Promise<number> {
         const result = await this.PostsModel.deleteOne({ id: postId });
-        console.log(result.deletedCount);
         return result.deletedCount;
     }
 

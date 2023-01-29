@@ -10,7 +10,6 @@ export class CommentsRepository {
     constructor(@InjectModel(Comments.name) private CommentsModel: Model<CommentsDocument>, @InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
 
     async getCommentById(commentId: string, userId: string | null) {
-        console.log(commentId, userId);
         const items = await this.CommentsModel.aggregate([
             { $match: { id: commentId } },
             {
@@ -68,8 +67,8 @@ export class CommentsRepository {
                     _id: 0,
                     id: 1,
                     content: 1,
-                    userId: 1,
-                    userLogin: 1,
+                    'commentatorInfo.userId': 1,
+                    'commentatorInfo.userLogin': 1,
                     createdAt: 1,
                     'likesInfo.likesCount': {
                         $cond: {
@@ -98,7 +97,6 @@ export class CommentsRepository {
             { $unwind: '$likesInfo.dislikesCount' },
             { $unwind: '$likesInfo.myStatus' },
         ]);
-        console.log(items);
         return items[0];
     }
 
@@ -165,8 +163,8 @@ export class CommentsRepository {
                     _id: 0,
                     id: 1,
                     content: 1,
-                    userId: 1,
-                    userLogin: 1,
+                    'commentatorInfo.userId': 1,
+                    'commentatorInfo.userLogin': 1,
                     createdAt: 1,
                     'likesInfo.likesCount': {
                         $cond: {
@@ -204,6 +202,7 @@ export class CommentsRepository {
     }
 
     async createComments(newComment: CommentsType) {
+        console.log(newComment);
         return await this.CommentsModel.create(newComment);
     }
 
