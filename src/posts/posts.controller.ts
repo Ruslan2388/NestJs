@@ -11,7 +11,6 @@ import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { LikeInputModel } from '../like/likeDto';
-import { use } from 'passport';
 
 @Controller('posts')
 export class PostsController {

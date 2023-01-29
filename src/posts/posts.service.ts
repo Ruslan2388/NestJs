@@ -28,10 +28,10 @@ export class PostsService {
         post.extendedLikesInfo.newestLikes = newestLikes;
         return post;
     }
-    async getPostsByBlogId(queryData, blogId: string): Promise<Post[] | null | Post> {
+    async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | null | Post> {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
-        return this.postsRepository.getPostsByBlogId(queryData, blogId);
+        return this.postsRepository.getPostsByBlogId(queryData, blogId, userId);
     }
 
     async createPost(inputModel: CreatePostInputModelType) {

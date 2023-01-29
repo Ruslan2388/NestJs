@@ -98,9 +98,7 @@ export class PostsRepository {
         return this.PostsModel.findOne({ id: postId }, { _id: 0, __v: 0 });
     }
 
-    async getPostsByBlogId(queryData, blogId): Promise<Post[] | any> {
-        const userId = '';
-        // const objectSort = { [queryData.sortBy]: queryData.sortDirection };
+    async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | any> {
         const totalCount = await this.PostsModel.countDocuments({
             blogId: blogId,
         });
