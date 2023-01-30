@@ -12,29 +12,10 @@ export class DevicesRepository {
     }
 
     async getActiveDevice(userId: string) {
-        return this.deviceModel.find(
-            { userId: userId },
-            {
-                projection: {
-                    _id: 0,
-                    exp: 0,
-                    refreshTokenActive: 0,
-                    userId: 0,
-                },
-            },
-        );
+        return this.deviceModel.find({ userId: userId }, { _id: 0, __v: 0, userId: 0, exp: 0 }).lean();
     }
     async getDeviceById(deviceId: string) {
-        return this.deviceModel.findOne(
-            { deviceId },
-            {
-                projection: {
-                    _id: 0,
-                    exp: 0,
-                    refreshTokenActive: 0,
-                },
-            },
-        );
+        return this.deviceModel.findOne({ deviceId }, { _id: 0, __v: 0, refreshTokenActive: 0, exp: 0 });
     }
     async updateRefreshTokenActive(userId: string, userAgent: string, iat: Date, exp: Date, deviceId: string) {
         return this.deviceModel.updateOne(

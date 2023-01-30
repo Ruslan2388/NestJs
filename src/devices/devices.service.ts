@@ -5,7 +5,7 @@ import { DevicesRepository } from './devices.repository';
 export class DevicesService {
     constructor(protected deviceRepository: DevicesRepository) {}
     async getActiveDevice(userId: string) {
-        return await this.deviceRepository.getActiveDevice(userId);
+        return this.deviceRepository.getActiveDevice(userId);
     }
 
     async addDevice(userId: string, userAgent: string, ip: string, deviceId: string, iat: Date, exp: Date) {
