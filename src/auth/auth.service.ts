@@ -5,10 +5,18 @@ import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { UsersRepository } from '../users/users.repository';
 import { EmailService } from '../helper/email.service';
+import { DevicesService } from '../devices/devices.service';
+import { DevicesRepository } from '../devices/devices.repository';
 
 @Injectable()
 export class AuthService {
-    constructor(protected authRepository: AuthRepository, private jwtService: JwtService, protected usersRepository: UsersRepository, protected emailAdapter: EmailService) {}
+    constructor(
+        protected authRepository: AuthRepository,
+        private jwtService: JwtService,
+        protected usersRepository: UsersRepository,
+        protected emailAdapter: EmailService,
+        protected devicesRepository: DevicesRepository,
+    ) {}
 
     async createAccessToken(userId: string, deviceId: string) {
         return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '10s' });
@@ -16,22 +24,6 @@ export class AuthService {
 
     async createRefreshToken(userId: string, deviceId: string) {
         return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '20s' });
-    }
-
-    async addDevice(userId: string, userAgent: string, ip: string, deviceId: string, iat: Date, exp: Date) {
-        const checkDevice = await this.authRepository.checkDeviceByRepeat(userId, userAgent);
-        if (checkDevice) {
-            return await this.authRepository.updateRefreshTokenActive(userId, userAgent, iat, exp, deviceId);
-        }
-        const newDevice = {
-            userId: userId,
-            title: userAgent,
-            lastActiveDate: iat.toISOString(),
-            exp: exp.toISOString(),
-            ip: ip,
-            deviceId: deviceId,
-        };
-        return await this.authRepository.addDevice(newDevice);
     }
 
     async getIatAndExpToken(refreshToken: string) {
@@ -62,14 +54,10 @@ export class AuthService {
         return false;
     }
 
-    async updateDeviceRefreshToken(userId: string, iat: Date, exp: Date, deviceId: string, searchIat: Date) {
-        return this.authRepository.updateRefreshToken(userId, iat, exp, deviceId, searchIat);
-    }
-
     async logout(userId: string, refreshToken: any) {
         const payload = await this.getPayload(refreshToken);
         console.log(payload);
-        return await this.authRepository.DeleteDeviceByUserId(userId, payload.iat);
+        return await this.devicesRepository.DeleteDeviceByUserId(userId, payload.iat);
     }
 
     async resentEmail(email: string) {

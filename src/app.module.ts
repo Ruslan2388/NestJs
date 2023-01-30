@@ -32,9 +32,12 @@ import { CommentsRepository } from './comments/comments.repository';
 import { CommentsService } from './comments/comments.service';
 import { Comments, CommentsSchema } from './schemas/commentsSchema';
 import { Like, LikeSchema } from './schemas/likeSchema';
+import { DevicesService } from './devices/devices.service';
+import { DevicesRepository } from './devices/devices.repository';
+import { DevicesController } from './devices/devices.controller';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
-const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService, CommentsService];
+const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService, CommentsService, DevicesService];
 
 @Module({
     imports: [
@@ -58,7 +61,7 @@ const services = [AppService, UsersService, BlogsService, PostsService, AuthServ
             { name: Like.name, schema: LikeSchema },
         ]),
     ],
-    controllers: [AppController, UsersController, BlogsController, DeleteAllController, PostsController, AuthController, CommentsController],
-    providers: [...services, PostsRepository, UsersRepository, BlogsRepository, AuthRepository, CommentsRepository, ...validators],
+    controllers: [AppController, UsersController, BlogsController, DeleteAllController, PostsController, AuthController, CommentsController, DevicesController],
+    providers: [...services, PostsRepository, UsersRepository, BlogsRepository, AuthRepository, CommentsRepository, DevicesRepository, ...validators],
 })
 export class AppModule {}

@@ -10,10 +10,11 @@ import { AccessTokenGuard, RefreshTokenGuard } from '../guard/authMeGuard';
 import { User } from '../schemas/usersSchema';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { DevicesService } from '../devices/devices.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(protected authService: AuthService, protected usersService: UsersService) {}
+    constructor(protected authService: AuthService, protected usersService: UsersService, protected deviceService: DevicesService) {}
 
     @Get('me')
     @HttpCode(200)
@@ -44,7 +45,7 @@ export class AuthController {
         const accessToken = await this.authService.createAccessToken(user.accountData.id, deviceId);
         const refreshToken = await this.authService.createRefreshToken(user.accountData.id, deviceId);
         const time = await this.authService.getIatAndExpToken(refreshToken);
-        await this.authService.addDevice(user.accountData.id, request.headers['user-agent'], request.ip, deviceId, time.iat, time.exp);
+        await this.deviceService.addDevice(user.accountData.id, request.headers['user-agent'], request.ip, deviceId, time.iat, time.exp);
         response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
@@ -70,7 +71,7 @@ export class AuthController {
                 .send({ accessToken: newAccessToken })
                 .status(200);
             const secondPayload = await this.authService.getPayload(newRefreshToken);
-            await this.authService.updateDeviceRefreshToken(user.accountData.id, secondPayload.iat, secondPayload.exp, secondPayload.deviceId, payload.iat);
+            await this.deviceService.updateDeviceRefreshToken(user.accountData.id, secondPayload.iat, secondPayload.exp, secondPayload.deviceId, payload.iat);
             return;
         }
         throw new UnauthorizedException();
