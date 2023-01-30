@@ -1,5 +1,5 @@
 import { DevicesService } from './devices.service';
-import { Controller, Delete, Get, HttpCode, NotFoundException, Param, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
@@ -34,7 +34,7 @@ export class DevicesController {
         if (!findDeviceById) throw new NotFoundException();
         const refreshToken = request.cookies.refreshToken;
         const payload = await this.authService.getPayload(refreshToken);
-        if (findDeviceById.userId !== payload.userId) throw new UnauthorizedException();
+        if (findDeviceById.userId !== payload.userId) throw new ForbiddenException();
         const deleteDeviceById = await this.deviceService.deleteDeviceById(payload.userId, findDeviceById.deviceId);
     }
 }
