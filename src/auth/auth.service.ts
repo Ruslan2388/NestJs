@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { UsersRepository } from '../users/users.repository';
 import { EmailService } from '../helper/email.service';
-import { DevicesService } from '../devices/devices.service';
 import { DevicesRepository } from '../devices/devices.repository';
 
 @Injectable()
