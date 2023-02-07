@@ -1,6 +1,7 @@
 import { BlogsRepository } from './blogs.repository';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
+import { IsBoolean } from 'class-validator';
 
 @Injectable()
 export class BlogsService {
@@ -23,6 +24,7 @@ export class BlogsService {
             description: inputModel.description,
             websiteUrl: inputModel.websiteUrl,
             createdAt: new Date().toISOString(),
+            isMembership: inputModel.isMembership,
         };
         const result = await this.blogsRepository.createBlog(newBlog);
         if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);
@@ -32,6 +34,7 @@ export class BlogsService {
             description: newBlog.description,
             websiteUrl: newBlog.websiteUrl,
             createdAt: newBlog.createdAt,
+            isMembership: newBlog.isMembership,
         };
     }
 

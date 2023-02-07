@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateBlogInputModelType {
@@ -10,6 +10,8 @@ export class CreateBlogInputModelType {
     @Length(1, 500)
     @IsUrl()
     websiteUrl: string;
+    @IsBoolean()
+    isMembership: boolean;
 }
 
 export class UpdateBlogInputModelType {
@@ -21,6 +23,8 @@ export class UpdateBlogInputModelType {
     @Length(1, 500)
     @IsUrl()
     websiteUrl: string;
+    @IsBoolean()
+    isMembership: boolean;
 }
 
 function transformSortDirection(value: string): string {
