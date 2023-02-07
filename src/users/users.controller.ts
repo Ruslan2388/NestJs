@@ -1,15 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserInputModelType, UsersPaginationQueryType } from './UserDto';
-import { UsersPaginationData } from '../helper/pagination';
+import { CreateUserInputModelType, UserQueryDto } from './UserDto';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 
 @Controller('users')
 export class UsersController {
     constructor(protected usersService: UsersService) {}
 
-    @Get() async getUsers(@Query() usersQueryPagination: UsersPaginationQueryType) {
-        const queryData = UsersPaginationData(usersQueryPagination);
+    @Get() async getUsers(@Query() queryData: UserQueryDto) {
         return await this.usersService.getUsers(queryData);
     }
 

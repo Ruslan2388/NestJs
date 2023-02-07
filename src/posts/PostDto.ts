@@ -1,4 +1,4 @@
-import { Length } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePostInputModelType {
@@ -38,21 +38,22 @@ export class UpdatePostInputModelType {
     blogId: string;
 }
 
-export class UpdatePostByBlogIdInputModelType {
-    @Length(3, 30)
-    title: string;
-    @Length(1, 100)
-    shortDescription: string;
-    @Length(1, 1000)
-    content: string;
-    @Length(1, 30)
-    blogId: string;
-}
+export class PostQueryDto {
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @IsOptional()
+    public pageNumber = 1;
 
-export type PostPaginationQueryType = {
-    searchNameTerm: string;
-    pageSize: number;
-    pageNumber: number;
-    sortBy: string;
-    sortDirection: 'asc' | 'desc';
-};
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @IsOptional()
+    public pageSize = 10;
+
+    @IsString()
+    @IsOptional()
+    public sortBy = 'createdAt';
+
+    @IsString()
+    @IsOptional()
+    public sortDirection = 'desc';
+}

@@ -1,12 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostInputModelType, PostPaginationQueryType, UpdatePostInputModelType } from './PostDto';
-import { getPostPaginationData } from '../helper/pagination';
+import { CreatePostInputModelType, PostQueryDto, UpdatePostInputModelType } from './PostDto';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
-import { CommentsPaginationData, CommentsPaginationQueryType, CreateCommentsInputModel } from '../comments/CommentsDto';
+import { CreateCommentsInputModel } from '../comments/CommentsDto';
 import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
@@ -17,16 +16,14 @@ export class PostsController {
     constructor(protected postsService: PostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
 
     @Get()
-    async getPosts(@Query() postQueryPagination: PostPaginationQueryType, @Req() request: Request) {
+    async getPosts(@Query() queryData: PostQueryDto, @Req() request: Request) {
         let authUserId = '';
-        const queryData = getPostPaginationData(postQueryPagination);
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
             if (userId) {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
-                const queryData = getPostPaginationData(postQueryPagination);
                 return await this.postsService.getPosts(queryData, authUserId);
             }
         }
@@ -73,10 +70,9 @@ export class PostsController {
     }
 
     @Get(':postId/comments')
-    async getCommentByPostId(@Param('postId') postId, @Req() request: Request, @Query() commentsQueryPagination: CommentsPaginationQueryType) {
+    async getCommentByPostId(@Param('postId') postId, @Req() request: Request, @Query() queryData: PostQueryDto) {
         const post = await this.postsService.getPostById(postId, '');
         if (!post) throw new NotFoundException();
-        const queryData = CommentsPaginationData(commentsQueryPagination);
         let authUserId;
 
         if (request.headers.authorization) {

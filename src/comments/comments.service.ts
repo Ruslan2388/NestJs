@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentsRepository } from './comments.repository';
 import { User } from '../schemas/usersSchema';
 import { PostsRepository } from '../posts/posts.repository';
-import { CommentsPaginationQueryType, CommentsType } from './CommentsDto';
+import { CommentsType } from './CommentsDto';
 
 @Injectable()
 export class CommentsService {
@@ -11,7 +11,7 @@ export class CommentsService {
         return await this.commentsRepository.getCommentById(commentId, userId);
     }
 
-    async getCommentsByPostId(postId: string, userId: string, queryData: CommentsPaginationQueryType) {
+    async getCommentsByPostId(postId: string, userId: string, queryData) {
         return this.commentsRepository.getCommentsByPostId(postId, userId, queryData);
     }
 

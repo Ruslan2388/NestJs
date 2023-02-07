@@ -1,9 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { BlogPaginationQueryType, CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
+import { BlogQueryDto, CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { PostsService } from '../posts/posts.service';
-import { CreatePostByBlogIdInputModelType, PostPaginationQueryType } from '../posts/PostDto';
-import { BlogPaginationData, getPostPaginationData } from '../helper/pagination';
+import { CreatePostByBlogIdInputModelType, PostQueryDto } from '../posts/PostDto';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
@@ -12,8 +11,10 @@ import { UsersService } from '../users/users.service';
 export class BlogsController {
     constructor(protected blogsService: BlogsService, protected postsService: PostsService, protected usersService: UsersService) {}
 
-    @Get() getBlogs(@Query() blogQueryPagination: BlogPaginationQueryType) {
-        const queryData = BlogPaginationData(blogQueryPagination);
+    @Get() getBlogs(@Query() queryData: BlogQueryDto) {
+        // console.log('f', bqDto);
+        // const queryData = BlogPaginationData(blogQueryPagination);
+        // console.log(queryData);
         return this.blogsService.getBlogs(queryData);
     }
 
@@ -46,8 +47,7 @@ export class BlogsController {
     }
 
     @Get(':blogId/posts')
-    async getPostsByBlogId(@Param('blogId') blogId: string, @Query() postQueryPagination: PostPaginationQueryType, @Req() request: Request) {
-        const queryData = getPostPaginationData(postQueryPagination);
+    async getPostsByBlogId(@Param('blogId') blogId: string, @Query() queryData: PostQueryDto, @Req() request: Request) {
         let authUserId = '';
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
@@ -55,7 +55,6 @@ export class BlogsController {
             if (userId) {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
-                const queryData = getPostPaginationData(postQueryPagination);
                 return await this.postsService.getPostsByBlogId(queryData, blogId, authUserId);
             }
         }

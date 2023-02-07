@@ -1,4 +1,4 @@
-import { IsUrl, Length } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateBlogInputModelType {
@@ -23,10 +23,31 @@ export class UpdateBlogInputModelType {
     websiteUrl: string;
 }
 
-export type BlogPaginationQueryType = {
-    searchNameTerm: string;
-    pageSize: number;
-    pageNumber: number;
-    sortBy: string;
-    sortDirection: 'asc' | 'desc'; //todo Enum
-};
+function transformSortDirection(value: string): string {
+    return value === 'asc' ? 'asc' : 'desc';
+}
+
+export class BlogQueryDto {
+    @IsString()
+    @IsOptional()
+    public searchNameTerm = '';
+
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @IsOptional()
+    public pageNumber = 1;
+
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @IsOptional()
+    public pageSize = 10;
+
+    @IsString()
+    @IsOptional()
+    public sortBy = 'createdAt';
+
+    @Transform(({ value }) => transformSortDirection(value))
+    @IsOptional()
+    @IsString()
+    public sortDirection = 'desc';
+}

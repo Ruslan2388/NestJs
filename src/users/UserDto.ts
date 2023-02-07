@@ -1,5 +1,6 @@
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 import { IsEmailInDb, IsLoginInDb } from '../decorators/registerDecorator';
+import { Transform } from 'class-transformer';
 
 export class CreateUserInputModelType {
     @IsLoginInDb()
@@ -16,11 +17,24 @@ export class CreateUserInputModelType {
     email: string;
 }
 
-export type UsersPaginationQueryType = {
-    searchLoginTerm: string;
-    searchEmailTerm: string;
-    pageSize: number;
-    pageNumber: number;
-    sortBy: string;
-    sortDirection: 'asc' | 'desc';
-};
+export class UserQueryDto {
+    @IsOptional()
+    public searchLoginTerm = '';
+
+    @IsOptional()
+    public searchEmailTerm = '';
+
+    @Transform(({ value }) => parseInt(value))
+    @IsOptional()
+    public pageNumber = 1;
+
+    @Transform(({ value }) => parseInt(value))
+    @IsOptional()
+    public pageSize = 10;
+
+    @IsOptional()
+    public sortBy = 'createdAt';
+
+    @IsOptional()
+    public sortDirection = 'desc';
+}
