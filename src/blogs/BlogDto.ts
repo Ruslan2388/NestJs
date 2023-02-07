@@ -21,8 +21,6 @@ export class UpdateBlogInputModelType {
     @Length(1, 500)
     @IsUrl()
     websiteUrl: string;
-    @IsBoolean()
-    isMembership: boolean;
 }
 
 function transformSortDirection(value: string): string {
