@@ -10,8 +10,6 @@ export class CreateBlogInputModelType {
     @Length(1, 500)
     @IsUrl()
     websiteUrl: string;
-    @IsBoolean()
-    isMembership: boolean;
 }
 
 export class UpdateBlogInputModelType {
