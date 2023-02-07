@@ -24,7 +24,7 @@ export class BlogsService {
             description: inputModel.description,
             websiteUrl: inputModel.websiteUrl,
             createdAt: new Date().toISOString(),
-            isMembership: inputModel.isMembership,
+            isMembership: false,
         };
         const result = await this.blogsRepository.createBlog(newBlog);
         if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);
