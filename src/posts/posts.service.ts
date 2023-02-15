@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
 import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
@@ -112,7 +112,7 @@ export class PostsService {
     async updatePostByPostId(blogId: string, postId: string, updateModel: UpdatePostInputModelType, userId: string) {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
-        if (blog.blogOwnerInfo.userId !== userId) throw new UnauthorizedException();
+        if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
         const result = await this.postsRepository.updatePostByPostId(postId, updateModel, blogId);
         if (!result) throw new NotFoundException();
         return result;
