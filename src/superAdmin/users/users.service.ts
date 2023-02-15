@@ -79,7 +79,7 @@ export class UsersService {
     }
 
     async banUser(userId: number, isBanned: boolean, banReason: string) {
-        const banDate = new Date().toDateString();
+        const banDate = new Date().toISOString();
         return this.usersRepository.banUser(userId, isBanned, banReason, banDate);
     }
 
