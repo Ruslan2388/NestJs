@@ -437,7 +437,7 @@ export class PostsRepository {
             {
                 title: updateModel.title,
                 content: updateModel.content,
-                websiteUrl: updateModel.websiteUrl,
+                blogId: updateModel.blogId,
                 shortDescription: updateModel.shortDescription,
             },
         );
