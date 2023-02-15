@@ -19,7 +19,7 @@ export class CommentsRepository {
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
 
         const items = await this.CommentsModel.aggregate([
-            { $match: { id: commentId } },
+            { $match: { id: commentId, 'commentatorInfo.userId': { $nin: bannedUser } } },
             {
                 $lookup: {
                     from: 'likes',
@@ -118,7 +118,7 @@ export class CommentsRepository {
         const pageSize = Number(queryData.pageSize);
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.CommentsModel.aggregate([
-            { $match: { parentId: postId } },
+            { $match: { parentId: postId, 'commentatorInfo.userId': { $nin: bannedUser } } },
             {
                 $lookup: {
                     from: 'likes',

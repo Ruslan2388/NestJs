@@ -30,6 +30,8 @@ export class Post {
     @Prop()
     blogName: string;
     @Prop()
+    userId: string;
+    @Prop()
     createdAt: string;
     @Prop()
     extendedLikesInfo: extendedLikesInfo;

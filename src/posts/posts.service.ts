@@ -77,11 +77,12 @@ export class PostsService {
         throw new NotFoundException();
     }
 
-    async createPostsByBlogId(inputModel: CreatePostByBlogIdInputModelType, blogId: string) {
+    async createPostsByBlogId(inputModel: CreatePostByBlogIdInputModelType, blogId: string, userId: string) {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) {
             throw new NotFoundException();
         }
+        console.log(userId);
         if (blog) {
             const newPost = {
                 id: new Date().valueOf().toString(),
@@ -89,6 +90,7 @@ export class PostsService {
                 shortDescription: inputModel.shortDescription,
                 content: inputModel.content,
                 blogId: blogId,
+                userId: userId,
                 blogName: blog.name,
                 createdAt: new Date().toISOString(),
                 extendedLikesInfo: {

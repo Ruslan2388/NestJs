@@ -22,6 +22,7 @@ export class PostsRepository {
         const pageSize = Number(queryData.pageSize);
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
+            { $match: { userId: { $nin: bannedUser } } },
             {
                 $lookup: {
                     from: 'likes',
@@ -165,6 +166,7 @@ export class PostsRepository {
         const pageSize = Number(queryData.pageSize);
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
+            { $match: { userId: { $nin: bannedUser } } },
             {
                 $lookup: {
                     from: 'likes',
@@ -294,6 +296,7 @@ export class PostsRepository {
         return { pagesCount, page, pageSize, totalCount, items };
     }
     async createPost(newPost): Promise<Post | null> {
+        console.log(newPost.userId);
         try {
             return this.PostsModel.create(newPost);
         } catch (e) {

@@ -47,7 +47,7 @@ export class PostsController {
     }
 
     @Post()
-    @UseGuards(BasicAuthGuard)
+    @UseGuards(AccessTokenGuard)
     createPost(@Body() inputModel: CreatePostInputModelType) {
         return this.postsService.createPost(inputModel);
     }

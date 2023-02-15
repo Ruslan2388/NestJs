@@ -58,6 +58,6 @@ export class BloggerController {
         const blog = await this.bloggerService.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
-        return await this.postsService.createPostsByBlogId(inputModel, blogId);
+        return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }
 }
