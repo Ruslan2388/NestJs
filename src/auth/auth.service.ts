@@ -18,11 +18,11 @@ export class AuthService {
     ) {}
 
     async createAccessToken(userId: string, deviceId: string) {
-        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '10m' });
+        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '40m' });
     }
 
     async createRefreshToken(userId: string, deviceId: string) {
-        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '20m' });
+        return this.jwtService.sign({ userId: userId, deviceId: deviceId }, { secret: 'SecretKey', expiresIn: '60m' });
     }
 
     async getIatAndExpToken(refreshToken: string) {

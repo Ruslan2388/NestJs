@@ -3,13 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { UsersController } from './users/users.controller';
-import { BlogsController } from './blogs/blogs.controller';
+import { BloggerController } from './blogs/blogger.controller';
 import { DeleteAllController } from './DeleteALl/DeleteAll.controller';
 import { AppService } from './app.service';
 import { UsersService } from './users/users.service';
-import { BlogsService } from './blogs/blogs.service';
+import { BloggerService } from './blogs/blogger.service';
 import { UsersRepository } from './users/users.repository';
-import { BlogsRepository } from './blogs/blogs.repository';
+import { BloggerRepository } from './blogs/blogger.repository';
 import { PostsController } from './posts/posts.controller';
 import { PostsService } from './posts/posts.service';
 import { PostsRepository } from './posts/posts.repository';
@@ -35,9 +35,15 @@ import { Like, LikeSchema } from './schemas/likeSchema';
 import { DevicesService } from './devices/devices.service';
 import { DevicesRepository } from './devices/devices.repository';
 import { DevicesController } from './devices/devices.controller';
+import { SuperAdminController } from './superAdmin/superAdmin.controller.';
+import { BlogsSAService } from './superAdmin/blogs/blogs-SA.service';
+import { BlogsSARepository } from './superAdmin/blogs/blogs-SA.repository';
+import { BlogsController } from './queryBlogs/blogs.controller';
+import { BlogsService } from './queryBlogs/blogs.service';
+import { BlogsRepository } from './queryBlogs/blogs.repository';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
-const services = [AppService, UsersService, BlogsService, PostsService, AuthService, JwtService, EmailService, CommentsService, DevicesService];
+const services = [AppService, UsersService, BloggerService, PostsService, AuthService, JwtService, EmailService, CommentsService, DevicesService, BlogsSAService, BlogsService];
 
 @Module({
     imports: [
@@ -61,7 +67,29 @@ const services = [AppService, UsersService, BlogsService, PostsService, AuthServ
             { name: Like.name, schema: LikeSchema },
         ]),
     ],
-    controllers: [AppController, UsersController, BlogsController, DeleteAllController, PostsController, AuthController, CommentsController, DevicesController],
-    providers: [...services, PostsRepository, UsersRepository, BlogsRepository, AuthRepository, CommentsRepository, DevicesRepository, ...validators],
+    controllers: [
+        AppController,
+        BlogsController,
+        UsersController,
+        BloggerController,
+        DeleteAllController,
+        PostsController,
+        AuthController,
+        CommentsController,
+        DevicesController,
+        SuperAdminController,
+    ],
+    providers: [
+        ...services,
+        PostsRepository,
+        UsersRepository,
+        BloggerRepository,
+        AuthRepository,
+        CommentsRepository,
+        DevicesRepository,
+        BlogsSARepository,
+        BlogsRepository,
+        ...validators,
+    ],
 })
 export class AppModule {}

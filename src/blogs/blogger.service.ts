@@ -1,14 +1,14 @@
-import { BlogsRepository } from './blogs.repository';
+import { BloggerRepository } from './blogger.repository';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { IsBoolean } from 'class-validator';
 
 @Injectable()
-export class BlogsService {
-    constructor(protected blogsRepository: BlogsRepository) {}
+export class BloggerService {
+    constructor(protected blogsRepository: BloggerRepository) {}
 
-    async getBlogs(queryData) {
-        return this.blogsRepository.getBlogs(queryData);
+    async getBlogger(queryData, user) {
+        return this.blogsRepository.getBlogger(queryData, user);
     }
 
     async getBlogById(blogId: string) {
@@ -17,7 +17,7 @@ export class BlogsService {
         return blog;
     }
 
-    async createBlog(inputModel: CreateBlogInputModelType) {
+    async createBlog(inputModel: CreateBlogInputModelType, user) {
         const newBlog = {
             id: new Date().valueOf().toString(),
             name: inputModel.name,
@@ -25,6 +25,10 @@ export class BlogsService {
             websiteUrl: inputModel.websiteUrl,
             createdAt: new Date().toISOString(),
             isMembership: false,
+            blogOwnerInfo: {
+                userId: user.accountData.id,
+                userLogin: user.accountData.login,
+            },
         };
         const result = await this.blogsRepository.createBlog(newBlog);
         if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);

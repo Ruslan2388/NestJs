@@ -2,12 +2,12 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
 import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
-import { BlogsRepository } from '../blogs/blogs.repository';
+import { BloggerRepository } from '../blogs/blogger.repository';
 import { NewestLikesType } from '../helper/pagination';
 
 @Injectable()
 export class PostsService {
-    constructor(protected postsRepository: PostsRepository, protected blogsRepository: BlogsRepository) {}
+    constructor(protected postsRepository: PostsRepository, protected blogsRepository: BloggerRepository) {}
     getPosts(queryData, userId) {
         return this.postsRepository.getPosts(queryData, userId);
     }

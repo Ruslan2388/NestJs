@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
-import { BlogsService } from '../blogs/blogs.service';
+import { BloggerService } from '../blogs/blogger.service';
 import { UsersRepository } from '../users/users.repository';
-import { BlogsRepository } from '../blogs/blogs.repository';
+import { BloggerRepository } from '../blogs/blogger.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { AuthRepository } from '../auth/auth.repository';
 import { CommentsRepository } from '../comments/comments.repository';
@@ -10,7 +10,7 @@ import { CommentsRepository } from '../comments/comments.repository';
 export class DeleteAllController {
     constructor(
         protected usersRepository: UsersRepository,
-        protected blogsRepository: BlogsRepository,
+        protected blogsRepository: BloggerRepository,
         protected postsRepository: PostsRepository,
         protected authRepository: AuthRepository,
         protected commentsRepository: CommentsRepository,

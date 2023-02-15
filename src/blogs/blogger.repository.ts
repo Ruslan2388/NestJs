@@ -5,14 +5,15 @@ import { Model } from 'mongoose';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 
 @Injectable()
-export class BlogsRepository {
+export class BloggerRepository {
     constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
-    async getBlogs(queryData): Promise<Blog[] | any> {
-        const filter: any = {};
+    async getBlogger(queryData, user): Promise<Blog[] | any> {
+        const filter: any = { 'blogOwnerInfo.userLogin': user.accountData.login };
         if (queryData.searchNameTerm) {
             filter.name = { $regex: queryData.searchNameTerm, $options: 'i' };
         }
         const totalCount = await this.blogModel.countDocuments({
+            'blogOwnerInfo.userLogin': user.accountData.login,
             name: {
                 $regex: queryData.searchNameTerm,
                 $options: 'i',
@@ -22,7 +23,7 @@ export class BlogsRepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const items = (await this.blogModel
-            .find(filter, { _id: 0, __v: 0 })
+            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
