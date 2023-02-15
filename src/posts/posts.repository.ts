@@ -467,6 +467,7 @@ export class PostsRepository {
     }
 
     async deletePostByBlogId(postId: string) {
-        return await this.PostsModel.deleteOne({ id: postId });
+        const result = await this.PostsModel.deleteOne({ id: postId });
+        return result.deletedCount;
     }
 }
