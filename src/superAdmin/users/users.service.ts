@@ -47,6 +47,8 @@ export class UsersService {
                 createdAt: new Date().toISOString(),
                 BanInfo: {
                     isBanned: false,
+                    banReason: null,
+                    banDate: null,
                 },
             },
             emailConfirmation: {
@@ -68,7 +70,7 @@ export class UsersService {
             login: result.accountData.login,
             email: result.accountData.email,
             createdAt: result.accountData.createdAt,
-            banInfo: { isBanned: false },
+            banInfo: { isBanned: result.accountData.BanInfo.isBanned, banReason: result.accountData.BanInfo.banReason, banDate: null },
         };
     }
 
