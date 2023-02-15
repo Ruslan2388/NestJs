@@ -10,7 +10,18 @@ export class UsersRepository {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
     async getUsers(queryData): Promise<User[] | any> {
-        const filter = await this._getUsersFilterForQuery(queryData);
+        let banQuery;
+        switch (queryData.banStatus) {
+            case 'banned':
+                banQuery = true;
+                break;
+            case 'notBanned':
+                banQuery = false;
+                break;
+            default:
+                banQuery = Boolean;
+        }
+        const filter = await this._getUsersFilterForQuery(queryData, banQuery);
         const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
@@ -81,15 +92,17 @@ export class UsersRepository {
         return result.matchedCount === 1;
     }
 
-    async _getUsersFilterForQuery(queryData) {
+    async _getUsersFilterForQuery(queryData, banQuery: string) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
                 'accountData.login': { $regex: queryData.searchLoginTerm, $options: 'i' },
+                'accountData.banInfo.isBanned': banQuery,
             };
         }
         if (queryData.searchEmailTerm && !queryData.searchLoginTerm) {
             return {
                 'accountData.email': { $regex: queryData.searchEmailTerm, $options: 'i' },
+                'accountData.banInfo.isBanned': banQuery,
             };
         }
         if (queryData.searchEmailTerm && queryData.searchLoginTerm) {
@@ -108,9 +121,10 @@ export class UsersRepository {
                         },
                     },
                 ],
+                'accountData.banInfo.isBanned': banQuery,
             };
         }
-        return {};
+        return { 'accountData.banInfo.isBanned': banQuery };
     }
 
     async banUser(userId: number, isBanned: boolean, banReason: string, banDate: string) {

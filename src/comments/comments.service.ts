@@ -16,7 +16,7 @@ export class CommentsService {
     }
 
     async createCommentByPostId(content: string, postId: string, user: User) {
-        const post = await this.postsRepository.getPostsById(postId);
+        const post = await this.postsRepository.getPostsById(postId, user.accountData.id);
         if (!post) throw new NotFoundException();
         const newComment: CommentsType = {
             id: (+new Date()).toString(),

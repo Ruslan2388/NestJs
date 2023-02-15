@@ -12,20 +12,8 @@ export class PostsService {
         return this.postsRepository.getPosts(queryData, userId);
     }
     async getPostById(postId: string, userId: string | null): Promise<Post | null> {
-        const post = await this.postsRepository.getPostsById(postId);
+        const post = await this.postsRepository.getPostsById(postId, userId);
         if (!post) throw new NotFoundException();
-
-        const likeByPost = await this.postsRepository.likeByPost(userId, postId);
-
-        const like = likeByPost.like;
-
-        const newestLikes: NewestLikesType[] = likeByPost.newestLikes;
-        if (like != null) {
-            if (like.status === 'Like' || like.status === 'Dislike' || like.status === 'None') {
-                post.extendedLikesInfo.myStatus = like.status;
-            }
-        }
-        post.extendedLikesInfo.newestLikes = newestLikes;
         return post;
     }
     async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | null | Post> {

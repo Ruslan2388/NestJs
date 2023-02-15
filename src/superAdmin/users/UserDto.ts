@@ -47,4 +47,7 @@ export class UserQueryDto {
 
     @IsOptional()
     public sortDirection = 'desc';
+
+    @IsOptional()
+    public banStatus = 'all';
 }
