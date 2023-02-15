@@ -9,6 +9,7 @@ import { BanUserUpdateModel, CreateUserInputModelType, UserQueryDto } from './us
 @Controller('sa')
 export class SuperAdminController {
     constructor(protected blogsSAService: BlogsSAService, protected blogService: BlogsService, protected usersService: UsersService) {}
+
     @UseGuards(BasicAuthGuard)
     @Get('blogger')
     async getBlogs(@Query() queryData: BlogQueryDto) {
@@ -44,9 +45,9 @@ export class SuperAdminController {
         return await this.blogsSAService.bindBlogWithUser(blog.id, user.accountData.id, user.accountData.login);
     }
 
+    @UseGuards(BasicAuthGuard)
     @Put('users/:userId/ban')
     @HttpCode(204)
-    @UseGuards(BasicAuthGuard)
     async banUser(@Param('userId') userId: number, @Body() updateModel: BanUserUpdateModel) {
         return this.usersService.banUser(userId, updateModel.isBanned, updateModel.banReason);
     }

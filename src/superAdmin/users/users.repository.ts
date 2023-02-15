@@ -116,10 +116,14 @@ export class UsersRepository {
     async banUser(userId: number, isBanned: boolean, banReason: string, banDate: string) {
         if (isBanned === true)
             return this.userModel.updateOne(
-                { userId },
+                { 'accountData.id': userId.toString() },
                 { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': banReason, 'accountData.BanInfo.banDate': banDate },
             );
-        else return this.userModel.updateOne({ userId }, { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': null, 'accountData.BanInfo.banDate': null });
+        else
+            return this.userModel.updateOne(
+                { 'accountData.id': userId.toString() },
+                { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': null, 'accountData.BanInfo.banDate': null },
+            );
     }
 
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
@@ -128,9 +132,7 @@ export class UsersRepository {
             login: u.accountData.login,
             email: u.accountData.email,
             createdAt: u.accountData.createdAt,
-
             banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
-            //   banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
         }));
     }
 }
