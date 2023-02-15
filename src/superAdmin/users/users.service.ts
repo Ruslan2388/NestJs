@@ -47,8 +47,6 @@ export class UsersService {
                 createdAt: new Date().toISOString(),
                 BanInfo: {
                     isBanned: false,
-                    banDate: null,
-                    banReason: null,
                 },
             },
             emailConfirmation: {
@@ -79,7 +77,8 @@ export class UsersService {
     }
 
     async banUser(userId: number, isBanned: boolean, banReason: string) {
-        return this.usersRepository.banUser(userId, isBanned, banReason);
+        const banDate = new Date().toDateString();
+        return this.usersRepository.banUser(userId, isBanned, banReason, banDate);
     }
 
     _generateHash(password: string) {

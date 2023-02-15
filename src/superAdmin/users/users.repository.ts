@@ -113,8 +113,17 @@ export class UsersRepository {
         return {};
     }
 
-    async banUser(userId: number, isBanned: boolean, banReason: string) {
-        return this.userModel.updateOne({ userId }, {});
+    async banUser(userId: number, isBanned: boolean, banReason: string, banDate: string) {
+        if (isBanned === true)
+            return this.userModel.updateOne(
+                { userId },
+                { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': banReason, 'accountData.BanInfo.banDate': banDate },
+            );
+        else
+            return this.userModel.updateOne(
+                { userId },
+                { 'accountData.BanInfo.isBanned': isBanned, $unset: { 'accountData.BanInfo.banReason': 1, 'accountData.BanInfo.banDate': 1 } },
+            );
     }
 
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
@@ -123,7 +132,9 @@ export class UsersRepository {
             login: u.accountData.login,
             email: u.accountData.email,
             createdAt: u.accountData.createdAt,
+
             banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
+            //   banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
         }));
     }
 }

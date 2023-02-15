@@ -36,11 +36,3 @@ export type CommentsPaginationQueryType = {
     sortBy: string;
     sortDirection: 'asc' | 'desc';
 };
-export const CommentsPaginationData = (query: any): CommentsPaginationQueryType => {
-    const postId = query.postId ? query.postId : query.postId;
-    const pageSize = isNaN(query.pageSize) ? 10 : query.pageSize;
-    const pageNumber = isNaN(query.pageNumber) ? 1 : query.pageNumber;
-    const sortBy = query.sortBy === 'login' ? 'login' : 'createdAt';
-    const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
-    return { postId, pageSize, pageNumber, sortBy, sortDirection };
-};
