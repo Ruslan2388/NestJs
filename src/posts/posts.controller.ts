@@ -8,7 +8,7 @@ import { User } from '../schemas/usersSchema';
 import { CreateCommentsInputModel } from '../comments/CommentsDto';
 import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../superAdmin/users/users.service';
 import { LikeInputModel } from '../like/likeDto';
 
 @Controller('posts')

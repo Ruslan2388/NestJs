@@ -2,14 +2,13 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { UsersController } from './users/users.controller';
-import { BloggerController } from './blogs/blogger.controller';
+import { BloggerController } from './blogger/blogger.controller';
 import { DeleteAllController } from './DeleteALl/DeleteAll.controller';
 import { AppService } from './app.service';
-import { UsersService } from './users/users.service';
-import { BloggerService } from './blogs/blogger.service';
-import { UsersRepository } from './users/users.repository';
-import { BloggerRepository } from './blogs/blogger.repository';
+import { UsersService } from './superAdmin/users/users.service';
+import { BloggerService } from './blogger/blogger.service';
+import { UsersRepository } from './superAdmin/users/users.repository';
+import { BloggerRepository } from './blogger/blogger.repository';
 import { PostsController } from './posts/posts.controller';
 import { PostsService } from './posts/posts.service';
 import { PostsRepository } from './posts/posts.repository';
@@ -38,9 +37,9 @@ import { DevicesController } from './devices/devices.controller';
 import { SuperAdminController } from './superAdmin/superAdmin.controller.';
 import { BlogsSAService } from './superAdmin/blogs/blogs-SA.service';
 import { BlogsSARepository } from './superAdmin/blogs/blogs-SA.repository';
-import { BlogsController } from './queryBlogs/blogs.controller';
-import { BlogsService } from './queryBlogs/blogs.service';
-import { BlogsRepository } from './queryBlogs/blogs.repository';
+import { BlogsController } from './blogsQuery/blogs.controller';
+import { BlogsService } from './blogsQuery/blogs.service';
+import { BlogsRepository } from './blogsQuery/blogs.repository';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
 const services = [AppService, UsersService, BloggerService, PostsService, AuthService, JwtService, EmailService, CommentsService, DevicesService, BlogsSAService, BlogsService];
@@ -70,7 +69,6 @@ const services = [AppService, UsersService, BloggerService, PostsService, AuthSe
     controllers: [
         AppController,
         BlogsController,
-        UsersController,
         BloggerController,
         DeleteAllController,
         PostsController,

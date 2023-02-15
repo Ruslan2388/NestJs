@@ -8,4 +8,8 @@ export class BlogsSAService {
     async getBlogsSa(queryData) {
         return this.blogsSaRepository.getBlogsSa(queryData);
     }
+
+    async bindBlogWithUser(blogId: string, userId: string, login: string) {
+        return await this.blogsSaRepository.bindBlogWithUser(blogId, userId, login);
+    }
 }

@@ -5,7 +5,7 @@ import { CreateUserInputModelType } from './UserDto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
-import { EmailService } from '../helper/email.service';
+import { EmailService } from '../../helper/email.service';
 
 @Injectable()
 export class UsersService {
@@ -45,6 +45,11 @@ export class UsersService {
                 email: inputModel.email,
                 password: passwordHash,
                 createdAt: new Date().toISOString(),
+                BanInfo: {
+                    isBanned: false,
+                    banDate: null,
+                    banReason: null,
+                },
             },
             emailConfirmation: {
                 confirmationCode: randomUUID(),
@@ -65,11 +70,16 @@ export class UsersService {
             login: result.accountData.login,
             email: result.accountData.email,
             createdAt: result.accountData.createdAt,
+            banInfo: { isBanned: false },
         };
     }
 
     async deleteUserById(userId: string) {
         return this.usersRepository.deleteUserById(userId);
+    }
+
+    async banUser(userId: number, isBanned: boolean, banReason: string) {
+        return this.usersRepository.banUser(userId, isBanned, banReason);
     }
 
     _generateHash(password: string) {

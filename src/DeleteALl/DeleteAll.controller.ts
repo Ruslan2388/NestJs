@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
-import { BloggerService } from '../blogs/blogger.service';
-import { UsersRepository } from '../users/users.repository';
-import { BloggerRepository } from '../blogs/blogger.repository';
+import { BloggerService } from '../blogger/blogger.service';
+import { UsersRepository } from '../superAdmin/users/users.repository';
+import { BloggerRepository } from '../blogger/blogger.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { AuthRepository } from '../auth/auth.repository';
 import { CommentsRepository } from '../comments/comments.repository';

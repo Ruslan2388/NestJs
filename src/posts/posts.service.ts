@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PostsRepository } from './posts.repository';
 import { Post } from '../schemas/postsSchema';
 import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
-import { BloggerRepository } from '../blogs/blogger.repository';
+import { BloggerRepository } from '../blogger/blogger.repository';
 import { NewestLikesType } from '../helper/pagination';
 
 @Injectable()

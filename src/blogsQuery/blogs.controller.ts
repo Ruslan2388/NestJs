@@ -4,7 +4,7 @@ import { BlogQueryDto } from './BlogDto';
 import { PostsService } from '../posts/posts.service';
 import { PostQueryDto } from '../posts/PostDto';
 import { Request } from 'express';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../superAdmin/users/users.service';
 
 @Controller('blogs')
 export class BlogsController {

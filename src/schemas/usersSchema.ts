@@ -3,6 +3,12 @@ import { IsDate } from 'class-validator';
 
 export type UserDocument = User & Document;
 
+class BanInfo {
+    isBanned: boolean;
+    banDate: string;
+    banReason: string;
+}
+
 class AccountData {
     @Prop()
     id: string;
@@ -14,6 +20,8 @@ class AccountData {
     email: string;
     @Prop()
     createdAt: string;
+    @Prop()
+    BanInfo: BanInfo;
 }
 class EmailConfirmation {
     @Prop()

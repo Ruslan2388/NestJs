@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserInputModelType } from '../users/UserDto';
-import { UsersService } from '../users/users.service';
+import { CreateUserInputModelType } from '../superAdmin/users/UserDto';
+import { UsersService } from '../superAdmin/users/users.service';
 import { EmailInputModelType, LoginInputModelType, PasswordInputModelType } from './LoginDto';
 import { Response, Request } from 'express';
 import * as bcrypt from 'bcrypt';

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Request } from 'express';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../superAdmin/users/users.service';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';

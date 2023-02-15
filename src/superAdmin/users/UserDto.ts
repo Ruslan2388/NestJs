@@ -1,5 +1,5 @@
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
-import { IsEmailInDb, IsLoginInDb } from '../decorators/registerDecorator';
+import { IsBoolean, IsEmail, IsIn, IsInt, IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import { IsEmailInDb, IsLoginInDb } from '../../decorators/registerDecorator';
 import { Transform } from 'class-transformer';
 
 export class CreateUserInputModelType {
@@ -7,6 +7,7 @@ export class CreateUserInputModelType {
     @Length(3, 10)
     @IsString()
     login: string;
+
     @Length(6, 20)
     @IsString()
     password: string;
@@ -15,6 +16,15 @@ export class CreateUserInputModelType {
     @IsEmail({}, { message: 'Incorrect Email' })
     @Length(1, 40)
     email: string;
+}
+
+export class BanUserUpdateModel {
+    @IsBoolean()
+    @Length(1, 25)
+    isBanned: boolean;
+    @Length(20, 40)
+    @IsString()
+    banReason: string;
 }
 
 export class UserQueryDto {

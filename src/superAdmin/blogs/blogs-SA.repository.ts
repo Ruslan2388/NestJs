@@ -29,4 +29,8 @@ export class BlogsSARepository {
             .lean()) as [];
         return { pagesCount, page, pageSize, totalCount, items };
     }
+
+    async bindBlogWithUser(blogId: string, userId: string, login: string) {
+        return this.blogModel.updateOne({ id: blogId }, { 'blogOwnerInfo.userId': userId, 'blogOwnerInfo.login': login });
+    }
 }

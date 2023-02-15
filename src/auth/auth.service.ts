@@ -3,7 +3,7 @@ import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
-import { UsersRepository } from '../users/users.repository';
+import { UsersRepository } from '../superAdmin/users/users.repository';
 import { EmailService } from '../helper/email.service';
 import { DevicesRepository } from '../devices/devices.repository';
 

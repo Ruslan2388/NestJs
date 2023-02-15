@@ -31,7 +31,7 @@ export class BlogsRepository {
     }
 
     async getBlogById(blogId): Promise<Blog> | null {
-        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0 });
+        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0, blogOwnerInfo: 0 });
         return blog;
     }
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../schemas/usersSchema';
+import { User, UserDocument } from '../../schemas/usersSchema';
 import { Model } from 'mongoose';
-import { UserDecorator } from '../decorators/user-param.decorator';
-import { UserResponseType } from '../helper/pagination';
+import { UserDecorator } from '../../decorators/user-param.decorator';
+import { UserResponseType } from '../../helper/pagination';
 
 @Injectable()
 export class UsersRepository {
@@ -112,12 +112,18 @@ export class UsersRepository {
         }
         return {};
     }
+
+    async banUser(userId: number, isBanned: boolean, banReason: string) {
+        return this.userModel.updateOne({ userId }, {});
+    }
+
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
         return users.map((u) => ({
             id: u.accountData.id,
             login: u.accountData.login,
             email: u.accountData.email,
             createdAt: u.accountData.createdAt,
+            banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
         }));
     }
 }
