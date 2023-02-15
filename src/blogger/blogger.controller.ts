@@ -61,10 +61,18 @@ export class BloggerController {
         if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
         return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }
+
     @Put('blogs/:blogId/posts/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     updatePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @Body() updateModel: UpdatePostInputModelType, @UserDecorator() user: User) {
         return this.postsService.updatePostByPostId(blogId, postId, updateModel, user.accountData.id);
+    }
+
+    @Delete('blogs/:blogId/posts/:postId')
+    @HttpCode(204)
+    @UseGuards(AccessTokenGuard)
+    async deletePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @UserDecorator() user: User) {
+        return this.postsService.deletePostByBlogId(blogId, postId, user.accountData.id);
     }
 }

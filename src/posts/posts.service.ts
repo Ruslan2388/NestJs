@@ -118,12 +118,21 @@ export class PostsService {
         return result;
     }
 
+    async createLikeByPost(postId, userId: string, likeStatus: string, login: string) {
+        const createdAt = new Date().toISOString();
+        return this.postsRepository.createLikeByPost(postId, userId, likeStatus, login, createdAt);
+    }
+
     async deletePostById(postId: string) {
         return this.postsRepository.deletePostById(postId);
     }
 
-    createLikeByPost(postId, userId: string, likeStatus: string, login: string) {
-        const createdAt = new Date().toISOString();
-        return this.postsRepository.createLikeByPost(postId, userId, likeStatus, login, createdAt);
+    async deletePostByBlogId(blogId: string, postId: string, userId: string) {
+        const blog = await this.blogsRepository.getBlogById(blogId);
+        if (!blog) throw new NotFoundException();
+        if (blog.blogOwnerInfo.userId !== userId) throw new UnauthorizedException();
+        const result = await this.postsRepository.deletePostByBlogId(postId);
+        if (!result) throw new NotFoundException();
+        return result;
     }
 }

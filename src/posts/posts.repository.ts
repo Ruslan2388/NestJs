@@ -466,13 +466,7 @@ export class PostsRepository {
         return true;
     }
 
-    async likeByPost(userId: string, postId: string) {
-        const newestLikes: NewestLikesType[] = await this.LikeModel.find({ parentId: postId, status: 'Like' }, { _id: 0, userId: 1, login: 1, addedAt: '$createdAt' })
-            .sort({ createdAt: -1 })
-            .limit(3)
-            .lean();
-        const like = await this.LikeModel.findOne({ userId: userId, parentId: postId });
-
-        return { newestLikes, like };
+    async deletePostByBlogId(postId: string) {
+        return await this.PostsModel.deleteOne({ id: postId });
     }
 }
