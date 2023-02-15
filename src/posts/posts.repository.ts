@@ -5,17 +5,60 @@ import { Model } from 'mongoose';
 import { UpdatePostInputModelType } from './PostDto';
 import { Like, LikeDocument } from '../schemas/likeSchema';
 import { NewestLikesType } from '../helper/pagination';
+import { User, UserDocument } from '../schemas/usersSchema';
 
 @Injectable()
 export class PostsRepository {
-    constructor(@InjectModel(Post.name) private PostsModel: Model<PostDocument>, @InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
+    constructor(
+        @InjectModel(Post.name) private PostsModel: Model<PostDocument>,
+        @InjectModel(Like.name) private LikeModel: Model<LikeDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+    ) {}
 
     async getPosts(queryData, userId: string): Promise<Post[] | any> {
         const totalCount = await this.PostsModel.countDocuments({});
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
+        const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
+            {
+                $lookup: {
+                    from: 'likes',
+                    localField: 'id',
+                    foreignField: 'parentId',
+                    pipeline: [
+                        {
+                            $match: {
+                                status: 'Like',
+                                userId: { $nin: bannedUser },
+                            },
+                        },
+                        { $count: 'count' },
+                    ],
+                    as: 'likesCount',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'likes',
+                    localField: 'id',
+                    foreignField: 'parentId',
+                    pipeline: [
+                        {
+                            $match: {
+                                status: 'Dislike',
+                                userId: { $nin: bannedUser },
+                            },
+                        },
+                        {
+                            $count: 'count',
+                        },
+                    ],
+                    as: 'dislikesCount',
+                },
+            },
+
             {
                 $lookup: {
                     from: 'likes',
@@ -41,6 +84,7 @@ export class PostsRepository {
                         {
                             $match: {
                                 status: 'Like',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         {
@@ -73,8 +117,20 @@ export class PostsRepository {
                     blogId: 1,
                     blogName: 1,
                     createdAt: 1,
-                    'extendedLikesInfo.likesCount': 1,
-                    'extendedLikesInfo.dislikesCount': 1,
+                    'extendedLikesInfo.likesCount': {
+                        $cond: {
+                            if: { $eq: [{ $size: '$likesCount' }, 0] },
+                            then: 0,
+                            else: '$likesCount.count',
+                        },
+                    },
+                    'extendedLikesInfo.dislikesCount': {
+                        $cond: {
+                            if: { $eq: [{ $size: '$dislikesCount' }, 0] },
+                            then: 0,
+                            else: '$dislikesCount.count',
+                        },
+                    },
                     'extendedLikesInfo.myStatus': {
                         $cond: {
                             if: { $eq: [{ $size: '$myStatus' }, 0] },
@@ -85,6 +141,8 @@ export class PostsRepository {
                     'extendedLikesInfo.newestLikes': '$newestLikes',
                 },
             },
+            { $unwind: '$extendedLikesInfo.likesCount' },
+            { $unwind: '$extendedLikesInfo.dislikesCount' },
             { $unwind: '$extendedLikesInfo.myStatus' },
         ])
             .sort({ [queryData.sortBy]: queryData.sortDirection })
@@ -105,7 +163,44 @@ export class PostsRepository {
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
+        const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
+            {
+                $lookup: {
+                    from: 'likes',
+                    localField: 'id',
+                    foreignField: 'parentId',
+                    pipeline: [
+                        {
+                            $match: {
+                                status: 'Like',
+                                userId: { $nin: bannedUser },
+                            },
+                        },
+                        { $count: 'count' },
+                    ],
+                    as: 'likesCount',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'likes',
+                    localField: 'id',
+                    foreignField: 'parentId',
+                    pipeline: [
+                        {
+                            $match: {
+                                status: 'Dislike',
+                                userId: { $nin: bannedUser },
+                            },
+                        },
+                        {
+                            $count: 'count',
+                        },
+                    ],
+                    as: 'dislikesCount',
+                },
+            },
             { $match: { blogId: blogId } },
             {
                 $lookup: {
@@ -132,6 +227,7 @@ export class PostsRepository {
                         {
                             $match: {
                                 status: 'Like',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         {
@@ -164,8 +260,20 @@ export class PostsRepository {
                     blogId: 1,
                     blogName: 1,
                     createdAt: 1,
-                    'extendedLikesInfo.likesCount': 1,
-                    'extendedLikesInfo.dislikesCount': 1,
+                    'extendedLikesInfo.likesCount': {
+                        $cond: {
+                            if: { $eq: [{ $size: '$likesCount' }, 0] },
+                            then: 0,
+                            else: '$likesCount.count',
+                        },
+                    },
+                    'extendedLikesInfo.dislikesCount': {
+                        $cond: {
+                            if: { $eq: [{ $size: '$dislikesCount' }, 0] },
+                            then: 0,
+                            else: '$dislikesCount.count',
+                        },
+                    },
                     'extendedLikesInfo.myStatus': {
                         $cond: {
                             if: { $eq: [{ $size: '$myStatus' }, 0] },
@@ -176,6 +284,8 @@ export class PostsRepository {
                     'extendedLikesInfo.newestLikes': '$newestLikes',
                 },
             },
+            { $unwind: '$extendedLikesInfo.likesCount' },
+            { $unwind: '$extendedLikesInfo.dislikesCount' },
             { $unwind: '$extendedLikesInfo.myStatus' },
         ])
             .sort({ [queryData.sortBy]: queryData.sortDirection })
@@ -222,15 +332,6 @@ export class PostsRepository {
                 createdAt: createdAt,
             },
             { upsert: true },
-        );
-        const likesCount = await this.LikeModel.countDocuments({ parentId: postId, status: 'Like' });
-        const dislikesCount = await this.LikeModel.countDocuments({ parentId: postId, status: 'Dislike' });
-        await this.PostsModel.updateOne(
-            { id: postId },
-            {
-                'extendedLikesInfo.likesCount': likesCount,
-                'extendedLikesInfo.dislikesCount': dislikesCount,
-            },
         );
         return true;
     }

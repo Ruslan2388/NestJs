@@ -13,22 +13,22 @@ export class BloggerController {
     constructor(protected bloggerService: BloggerService, protected postsService: PostsService, protected usersService: UsersService) {}
 
     @UseGuards(AccessTokenGuard)
-    @Get('blogger')
+    @Get('blogs')
     getBlogs(@Query() queryData: BlogQueryDto, @UserDecorator() user: User) {
         return this.bloggerService.getBlogger(queryData, user);
     }
 
-    @Get('blogger/:blogId') getBlogById(@Param('blogId') blogId) {
+    @Get('blogs/:blogId') getBlogById(@Param('blogId') blogId) {
         return this.bloggerService.getBlogById(blogId);
     }
 
-    @Post('blogger')
+    @Post('blogs')
     @UseGuards(AccessTokenGuard)
     createBlog(@Body() inputModel: CreateBlogInputModelType, @UserDecorator() user: User) {
         return this.bloggerService.createBlog(inputModel, user);
     }
 
-    @Put('blogger/:blogId')
+    @Put('blogs/:blogId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async updateBlogByBlogId(@Param('blogId') blogId, @Body() updateModel: UpdateBlogInputModelType, @UserDecorator() user: User) {
@@ -38,7 +38,7 @@ export class BloggerController {
         return await this.bloggerService.updateBlogByBlogId(blogId, updateModel);
     }
 
-    @Delete('blogger/:blogId')
+    @Delete('blogs/:blogId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async deleteBlogByBlogId(@Param('blogId') blogId: string, @UserDecorator() user: User) {
@@ -52,7 +52,7 @@ export class BloggerController {
         return;
     }
 
-    @Post('blogger/:blogId/posts')
+    @Post('blogs/:blogId/posts')
     @UseGuards(AccessTokenGuard)
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
         const blog = await this.bloggerService.getBlogById(blogId);

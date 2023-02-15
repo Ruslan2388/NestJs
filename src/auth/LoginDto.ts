@@ -1,6 +1,5 @@
 import { IsEmail, Length } from 'class-validator';
 import { ResendEmailValidatorD } from '../decorators/resendEmail.decorator';
-import { IsUserBanDecorator } from '../decorators/loginDecorators';
 
 export class LoginInputModelType {
     @Length(3, 10)

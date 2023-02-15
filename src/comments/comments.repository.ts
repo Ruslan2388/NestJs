@@ -4,12 +4,20 @@ import { Comments, CommentsDocument } from '../schemas/commentsSchema';
 import { Model } from 'mongoose';
 import { CommentsPaginationQueryType, CommentsType } from './CommentsDto';
 import { Like, LikeDocument } from 'src/schemas/likeSchema';
+import { Blog, BlogDocument } from '../schemas/blogsSchema';
+import { User, UserDocument } from '../schemas/usersSchema';
 
 @Injectable()
 export class CommentsRepository {
-    constructor(@InjectModel(Comments.name) private CommentsModel: Model<CommentsDocument>, @InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
+    constructor(
+        @InjectModel(Comments.name) private CommentsModel: Model<CommentsDocument>,
+        @InjectModel(Like.name) private LikeModel: Model<LikeDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+    ) {}
 
     async getCommentById(commentId: string, userId: string | null) {
+        const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
+
         const items = await this.CommentsModel.aggregate([
             { $match: { id: commentId } },
             {
@@ -21,6 +29,7 @@ export class CommentsRepository {
                         {
                             $match: {
                                 status: 'Like',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         { $count: 'count' },
@@ -37,6 +46,7 @@ export class CommentsRepository {
                         {
                             $match: {
                                 status: 'Dislike',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         {
@@ -106,6 +116,7 @@ export class CommentsRepository {
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
+        const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.CommentsModel.aggregate([
             { $match: { parentId: postId } },
             {
@@ -117,6 +128,7 @@ export class CommentsRepository {
                         {
                             $match: {
                                 status: 'Like',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         { $count: 'count' },
@@ -133,6 +145,7 @@ export class CommentsRepository {
                         {
                             $match: {
                                 status: 'Dislike',
+                                userId: { $nin: bannedUser },
                             },
                         },
                         {
