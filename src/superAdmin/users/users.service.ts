@@ -45,7 +45,7 @@ export class UsersService {
                 email: inputModel.email,
                 password: passwordHash,
                 createdAt: new Date().toISOString(),
-                BanInfo: {
+                banInfo: {
                     isBanned: false,
                     banReason: null,
                     banDate: null,
@@ -70,7 +70,7 @@ export class UsersService {
             login: result.accountData.login,
             email: result.accountData.email,
             createdAt: result.accountData.createdAt,
-            banInfo: { isBanned: result.accountData.BanInfo.isBanned, banReason: result.accountData.BanInfo.banReason, banDate: null },
+            banInfo: { isBanned: result.accountData.banInfo.isBanned, banReason: result.accountData.banInfo.banReason, banDate: null },
         };
     }
 

@@ -21,7 +21,7 @@ class AccountData {
     @Prop()
     createdAt: string;
     @Prop()
-    BanInfo: BanInfo;
+    banInfo: BanInfo;
 }
 class EmailConfirmation {
     @Prop()

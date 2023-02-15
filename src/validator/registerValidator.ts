@@ -13,6 +13,7 @@ export class IsLoginInDB implements ValidatorConstraintInterface {
             const user = await this.userModel.findOne({
                 'accountData.login': login,
             });
+
             if (user) return false;
             return true;
         } catch (e) {

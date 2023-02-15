@@ -117,12 +117,12 @@ export class UsersRepository {
         if (isBanned === true)
             return this.userModel.updateOne(
                 { 'accountData.id': userId.toString() },
-                { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': banReason, 'accountData.BanInfo.banDate': banDate },
+                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': banReason, 'accountData.banInfo.banDate': banDate },
             );
         else
             return this.userModel.updateOne(
                 { 'accountData.id': userId.toString() },
-                { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': null, 'accountData.BanInfo.banDate': null },
+                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': null, 'accountData.banInfo.banDate': null },
             );
     }
 
@@ -132,7 +132,7 @@ export class UsersRepository {
             login: u.accountData.login,
             email: u.accountData.email,
             createdAt: u.accountData.createdAt,
-            banInfo: { isBanned: u.accountData.BanInfo.isBanned, banReason: u.accountData.BanInfo.banReason, banDate: u.accountData.BanInfo.banDate },
+            banInfo: { isBanned: u.accountData.banInfo.isBanned, banReason: u.accountData.banInfo.banReason, banDate: u.accountData.banInfo.banDate },
         }));
     }
 }
