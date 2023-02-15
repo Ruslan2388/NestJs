@@ -51,9 +51,9 @@ export class SuperAdminController {
         return this.usersService.banUser(userId, updateModel.isBanned, updateModel.banReason);
     }
 
-    @Delete(':userId')
-    @HttpCode(204)
     @UseGuards(BasicAuthGuard)
+    @Delete('users/:userId')
+    @HttpCode(204)
     async deleteUsers(@Param('userId') userId: string) {
         const result = await this.usersService.deleteUserById(userId);
         if (!result) {

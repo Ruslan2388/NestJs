@@ -119,11 +119,7 @@ export class UsersRepository {
                 { userId },
                 { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': banReason, 'accountData.BanInfo.banDate': banDate },
             );
-        else
-            return this.userModel.updateOne(
-                { userId },
-                { 'accountData.BanInfo.isBanned': isBanned, $unset: { 'accountData.BanInfo.banReason': 1, 'accountData.BanInfo.banDate': 1 } },
-            );
+        else return this.userModel.updateOne({ userId }, { 'accountData.BanInfo.isBanned': isBanned, 'accountData.BanInfo.banReason': null, 'accountData.BanInfo.banDate': null });
     }
 
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
