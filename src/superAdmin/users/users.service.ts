@@ -23,7 +23,7 @@ export class UsersService {
 
     async getUserByLoginOrEmail(loginOrEmail: string) {
         const user = await this.usersRepository.getUserByLoginOrEmail(loginOrEmail);
-        if (!user) throw new UnauthorizedException();
+        if (!user || user.accountData.banInfo.isBanned === true) throw new UnauthorizedException();
         return user;
     }
 
