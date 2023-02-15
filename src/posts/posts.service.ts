@@ -130,7 +130,7 @@ export class PostsService {
     async deletePostByBlogId(blogId: string, postId: string, userId: string) {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
-        if (blog.blogOwnerInfo.userId !== userId) throw new UnauthorizedException();
+        if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
         const result = await this.postsRepository.deletePostByBlogId(postId);
         if (!result) throw new NotFoundException();
         return result;
