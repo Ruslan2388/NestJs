@@ -52,13 +52,6 @@ export class PostsController {
         return this.postsService.createPost(inputModel);
     }
 
-    @Put(':postId')
-    @HttpCode(204)
-    @UseGuards(BasicAuthGuard)
-    updateBlogByBlogId(@Param('postId') postId, @Body() updateModel: UpdatePostInputModelType) {
-        return this.postsService.updatePostByPostId(postId, updateModel);
-    }
-
     @Delete(':postId')
     @HttpCode(204)
     @UseGuards(BasicAuthGuard)

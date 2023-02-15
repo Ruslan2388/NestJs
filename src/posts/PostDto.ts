@@ -35,7 +35,7 @@ export class UpdatePostInputModelType {
     @Transform(({ value }) => value?.trim())
     content: string;
     @Length(1, 30)
-    blogId: string;
+    websiteUrl: string;
 }
 
 export class PostQueryDto {

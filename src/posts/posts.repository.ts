@@ -431,13 +431,13 @@ export class PostsRepository {
         }
     }
 
-    async updatePostByPostId(postId, updateModel: UpdatePostInputModelType) {
+    async updatePostByPostId(postId, updateModel: UpdatePostInputModelType, blogId: string) {
         const result = await this.PostsModel.updateOne(
             { id: postId },
             {
                 title: updateModel.title,
                 content: updateModel.content,
-                websiteUrl: updateModel.blogId,
+                websiteUrl: updateModel.websiteUrl,
                 shortDescription: updateModel.shortDescription,
             },
         );
