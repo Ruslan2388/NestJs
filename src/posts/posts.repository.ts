@@ -154,7 +154,8 @@ export class PostsRepository {
     }
 
     async getPostsById(postId: string): Promise<Post | null> {
-        return this.PostsModel.findOne({ id: postId }, { _id: 0, __v: 0 });
+        const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
+        return this.PostsModel.findOne({ id: postId, userId: { $nin: bannedUser } }, { _id: 0, __v: 0 });
     }
 
     async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | any> {
