@@ -4,6 +4,7 @@ import { Like, LikeDocument } from 'src/schemas/likeSchema';
 import { Post, PostDocument } from '../schemas/postsSchema';
 import { User, UserDocument } from '../schemas/usersSchema';
 import { Model } from 'mongoose';
+import { Blog, BlogDocument } from '../schemas/blogsSchema';
 
 @Injectable()
 export class QueryPostsRepository {
@@ -11,16 +12,18 @@ export class QueryPostsRepository {
         @InjectModel(Post.name) private PostsModel: Model<PostDocument>,
         @InjectModel(Like.name) private LikeModel: Model<LikeDocument>,
         @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     ) {}
 
     async getPosts(queryData, userId: string): Promise<Post[] | any> {
+        const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
         const totalCount = await this.PostsModel.countDocuments({});
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
-            { $match: { userId: { $nin: bannedUser } } },
+            { $match: { userId: { $nin: bannedUser }, blogId: { $nin: bannedBlog } } },
             {
                 $lookup: {
                     from: 'likes',
@@ -153,9 +156,9 @@ export class QueryPostsRepository {
 
     async getPostsById(postId: string, userId): Promise<Post | null> {
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
-
+        const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([
-            { $match: { id: postId, userId: { $nin: bannedUser } } },
+            { $match: { id: postId, userId: { $nin: bannedUser }, blogId: { $nin: bannedBlog } } },
             {
                 $lookup: {
                     from: 'likes',
