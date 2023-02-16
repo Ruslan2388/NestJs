@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../schemas/blogsSchema';
 import { Model } from 'mongoose';
-import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 
 @Injectable()
 export class BlogsRepository {
     constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
     async getBlogs(queryData): Promise<Blog[] | any> {
-        const filter: any = {};
+        const bannedBlog = await this.blogModel.distinct('id', { isBanned: true });
+        const filter: any = { id: { $nin: bannedBlog } };
+        console.log(bannedBlog);
         if (queryData.searchNameTerm) {
             filter.name = { $regex: queryData.searchNameTerm, $options: 'i' };
         }
         const totalCount = await this.blogModel.countDocuments({
+            id: { $nin: bannedBlog },
             name: {
                 $regex: queryData.searchNameTerm,
                 $options: 'i',
@@ -22,7 +24,7 @@ export class BlogsRepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const items = (await this.blogModel
-            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0 })
+            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0, isBanned: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
@@ -31,7 +33,8 @@ export class BlogsRepository {
     }
 
     async getBlogById(blogId): Promise<Blog> | null {
-        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0, blogOwnerInfo: 0 });
+        const bannedBlog = await this.blogModel.distinct('id', { isBanned: true });
+        const blog = await this.blogModel.findOne({ $and: [{ id: blogId }, { id: { $nin: bannedBlog } }] }, { _id: 0, __v: 0, blogOwnerInfo: 0, isBanned: 0 });
         return blog;
     }
 }

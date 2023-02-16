@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../../schemas/blogsSchema';
 import { Model } from 'mongoose';
+import { BanBlogUpdateModel } from './superAdminBlogDTO';
 
 @Injectable()
 export class BlogsSARepository {
@@ -32,5 +33,10 @@ export class BlogsSARepository {
 
     async bindBlogWithUser(blogId: string, userId: string, login: string) {
         return this.blogModel.updateOne({ id: blogId }, { 'blogOwnerInfo.userId': userId, 'blogOwnerInfo.login': login });
+    }
+
+    async banBlog(blogId: string, updateModel: BanBlogUpdateModel) {
+        console.log('sds');
+        return this.blogModel.updateOne({ id: blogId }, { isBanned: updateModel.isBanned });
     }
 }

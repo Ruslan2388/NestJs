@@ -7,7 +7,6 @@ import { UsersService } from '../superAdmin/users/users.service';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
-import { BasicAuthGuard } from '../guard/basicAuthGuard';
 
 @Controller('blogger')
 export class BloggerController {

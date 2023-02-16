@@ -5,6 +5,7 @@ import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { BlogsService } from '../blogsQuery/blogs.service';
 import { UsersService } from './users/users.service';
 import { BanUserUpdateModel, CreateUserInputModelType, UserQueryDto } from './users/UserDto';
+import { BanBlogUpdateModel } from './blogs/superAdminBlogDTO';
 
 @Controller('sa')
 export class SuperAdminController {
@@ -50,6 +51,13 @@ export class SuperAdminController {
     @HttpCode(204)
     async banUser(@Param('userId') userId: number, @Body() updateModel: BanUserUpdateModel) {
         return this.usersService.banUser(userId, updateModel.isBanned, updateModel.banReason);
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Put('blogs/:blogId/ban')
+    @HttpCode(204)
+    async banBlog(@Param('blogId') blogId, @Body() updateModel: BanBlogUpdateModel) {
+        return this.blogsSAService.banBlog(blogId.toString(), updateModel);
     }
 
     @UseGuards(BasicAuthGuard)

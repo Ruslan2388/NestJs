@@ -22,5 +22,7 @@ export class Blog {
     isMembership: boolean;
     @Prop()
     blogOwnerInfo: blogOwnerInfo;
+    @Prop()
+    isBanned: boolean;
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);
