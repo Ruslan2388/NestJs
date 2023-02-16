@@ -11,7 +11,7 @@ export class SuperAdminController {
     constructor(protected blogsSAService: BlogsSAService, protected blogService: BlogsService, protected usersService: UsersService) {}
 
     @UseGuards(BasicAuthGuard)
-    @Get('blogger')
+    @Get('blogs')
     async getBlogs(@Query() queryData: BlogQueryDto) {
         return this.blogsSAService.getBlogsSa(queryData);
     }
