@@ -40,9 +40,24 @@ import { BlogsSARepository } from './superAdmin/blogs/blogs-SA.repository';
 import { BlogsController } from './blogsQuery/blogs.controller';
 import { BlogsService } from './blogsQuery/blogs.service';
 import { BlogsRepository } from './blogsQuery/blogs.repository';
+import { QueryPostsRepository } from './postsQuery/QueryPosts.repository';
+import { QueryPostsService } from './postsQuery/QueryPosts.service';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
-const services = [AppService, UsersService, BloggerService, PostsService, AuthService, JwtService, EmailService, CommentsService, DevicesService, BlogsSAService, BlogsService];
+const services = [
+    AppService,
+    UsersService,
+    BloggerService,
+    PostsService,
+    AuthService,
+    JwtService,
+    EmailService,
+    CommentsService,
+    DevicesService,
+    BlogsSAService,
+    BlogsService,
+    QueryPostsService,
+];
 
 @Module({
     imports: [
@@ -87,6 +102,7 @@ const services = [AppService, UsersService, BloggerService, PostsService, AuthSe
         DevicesRepository,
         BlogsSARepository,
         BlogsRepository,
+        QueryPostsRepository,
         ...validators,
     ],
 })
