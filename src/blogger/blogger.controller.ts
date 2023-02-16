@@ -53,7 +53,7 @@ export class BloggerController {
         return;
     }
 
-    @Post('blogs/:blogId/postsQuery')
+    @Post('blogs/:blogId/posts')
     @UseGuards(AccessTokenGuard)
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
         const blog = await this.bloggerService.getBlogById(blogId);
@@ -62,14 +62,14 @@ export class BloggerController {
         return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }
 
-    @Put('blogs/:blogId/postsQuery/:postId')
+    @Put('blogs/:blogId/posts/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     updatePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @Body() updateModel: UpdatePostInputModelType, @UserDecorator() user: User) {
         return this.postsService.updatePostByPostId(blogId, postId, updateModel, user.accountData.id);
     }
 
-    @Delete('blogs/:blogId/postsQuery/:postId')
+    @Delete('blogs/:blogId/posts/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async deletePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @UserDecorator() user: User) {

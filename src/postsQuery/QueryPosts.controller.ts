@@ -1,7 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
-import { PostsService } from '../blogger/post/posts.service';
-import { CreatePostInputModelType, PostQueryDto, UpdatePostInputModelType } from './PostDto';
-import { BasicAuthGuard } from '../guard/basicAuthGuard';
+import { Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { PostQueryDto } from './PostDto';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
@@ -12,7 +10,7 @@ import { UsersService } from '../superAdmin/users/users.service';
 import { LikeInputModel } from '../like/likeDto';
 import { QueryPostsService } from './QueryPosts.service';
 
-@Controller('postsQuery')
+@Controller('posts')
 export class QueryPostsController {
     constructor(protected queryPostsService: QueryPostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
 
