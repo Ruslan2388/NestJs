@@ -29,6 +29,10 @@ export class BloggerService {
                 userId: user.accountData.id,
                 userLogin: user.accountData.login,
             },
+            banInfo: {
+                isBanned: false,
+                banDate: null,
+            },
         };
         const result = await this.blogsRepository.createBlog(newBlog);
         if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);
