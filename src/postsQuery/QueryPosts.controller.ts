@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
-import { PostsService } from './posts.service';
+import { PostsService } from '../blogger/post/posts.service';
 import { CreatePostInputModelType, PostQueryDto, UpdatePostInputModelType } from './PostDto';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { AccessTokenGuard } from '../guard/authMeGuard';
@@ -10,10 +10,11 @@ import { CommentsService } from '../comments/comments.service';
 import { Request } from 'express';
 import { UsersService } from '../superAdmin/users/users.service';
 import { LikeInputModel } from '../like/likeDto';
+import { QueryPostsService } from './QueryPosts.service';
 
-@Controller('posts')
-export class PostsController {
-    constructor(protected postsService: PostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
+@Controller('postsQuery')
+export class QueryPostsController {
+    constructor(protected queryPostsService: QueryPostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
 
     @Get()
     async getPosts(@Query() queryData: PostQueryDto, @Req() request: Request) {
@@ -24,10 +25,10 @@ export class PostsController {
             if (userId) {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
-                return await this.postsService.getPosts(queryData, authUserId);
+                return await this.queryPostsService.getPosts(queryData, authUserId);
             }
         }
-        return await this.postsService.getPosts(queryData, authUserId);
+        return await this.queryPostsService.getPosts(queryData, authUserId);
     }
 
     @Get(':postId')
@@ -40,31 +41,15 @@ export class PostsController {
             if (userId) {
                 const user = await this.usersService.getUserById(userId);
                 authUserId = user.accountData.id;
-                return this.postsService.getPostById(postId, authUserId);
+                return this.queryPostsService.getPostById(postId, authUserId);
             }
         }
-        return this.postsService.getPostById(postId, authUserId);
-    }
-
-    @Post()
-    @UseGuards(AccessTokenGuard)
-    createPost(@Body() inputModel: CreatePostInputModelType) {
-        return this.postsService.createPost(inputModel);
-    }
-
-    @Delete(':postId')
-    @HttpCode(204)
-    @UseGuards(BasicAuthGuard)
-    async deletePostById(@Param('postId') postId) {
-        const result = await this.postsService.deletePostById(postId);
-        if (!result) {
-            throw new NotFoundException();
-        }
+        return this.queryPostsService.getPostById(postId, authUserId);
     }
 
     @Get(':postId/comments')
     async getCommentByPostId(@Param('postId') postId, @Req() request: Request, @Query() queryData: PostQueryDto) {
-        const post = await this.postsService.getPostById(postId, '');
+        const post = await this.queryPostsService.getPostById(postId, '');
         if (!post) throw new NotFoundException();
         let authUserId;
 
@@ -90,8 +75,8 @@ export class PostsController {
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async createLikeByPost(@Param('postId') postId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
-        const post = await this.postsService.getPostById(postId, user.accountData.id);
+        const post = await this.queryPostsService.getPostById(postId, user.accountData.id);
         if (!post) throw new NotFoundException();
-        return this.postsService.createLikeByPost(postId, user.accountData.id, inputModel.likeStatus, user.accountData.login);
+        return this.queryPostsService.createLikeByPost(postId, user.accountData.id, inputModel.likeStatus, user.accountData.login);
     }
 }

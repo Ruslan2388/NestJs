@@ -9,9 +9,9 @@ import { UsersService } from './superAdmin/users/users.service';
 import { BloggerService } from './blogger/blogger.service';
 import { UsersRepository } from './superAdmin/users/users.repository';
 import { BloggerRepository } from './blogger/blogger.repository';
-import { PostsController } from './posts/posts.controller';
-import { PostsService } from './posts/posts.service';
-import { PostsRepository } from './posts/posts.repository';
+import { QueryPostsController } from './postsQuery/QueryPosts.controller';
+import { PostsService } from './blogger/post/posts.service';
+import { PostsRepository } from './blogger/post/posts.repository';
 import { User, UserSchema } from './schemas/usersSchema';
 import { Blog, BlogSchema } from './schemas/blogsSchema';
 import { Post, PostScheme } from './schemas/postsSchema';
@@ -71,7 +71,7 @@ const services = [AppService, UsersService, BloggerService, PostsService, AuthSe
         BlogsController,
         BloggerController,
         DeleteAllController,
-        PostsController,
+        QueryPostsController,
         AuthController,
         CommentsController,
         DevicesController,

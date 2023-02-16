@@ -1,21 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { Post } from '../schemas/postsSchema';
-import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from './PostDto';
-import { BloggerRepository } from '../blogger/blogger.repository';
-import { NewestLikesType } from '../helper/pagination';
+import { Post } from '../../schemas/postsSchema';
+import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from '../../postsQuery/PostDto';
+import { BloggerRepository } from '../blogger.repository';
+import { NewestLikesType } from '../../helper/pagination';
 
 @Injectable()
 export class PostsService {
     constructor(protected postsRepository: PostsRepository, protected blogsRepository: BloggerRepository) {}
-    getPosts(queryData, userId) {
-        return this.postsRepository.getPosts(queryData, userId);
-    }
-    async getPostById(postId: string, userId: string | null): Promise<Post | null> {
-        const post = await this.postsRepository.getPostsById(postId, userId);
-        if (!post) throw new NotFoundException();
-        return post;
-    }
+
     async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | null | Post> {
         const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
@@ -121,10 +114,6 @@ export class PostsService {
     async createLikeByPost(postId, userId: string, likeStatus: string, login: string) {
         const createdAt = new Date().toISOString();
         return this.postsRepository.createLikeByPost(postId, userId, likeStatus, login, createdAt);
-    }
-
-    async deletePostById(postId: string) {
-        return this.postsRepository.deletePostById(postId);
     }
 
     async deletePostByBlogId(blogId: string, postId: string, userId: string) {

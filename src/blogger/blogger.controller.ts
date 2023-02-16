@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BloggerService } from './blogger.service';
 import { BlogQueryDto, CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
-import { PostsService } from '../posts/posts.service';
-import { CreatePostByBlogIdInputModelType, UpdatePostInputModelType } from '../posts/PostDto';
+import { PostsService } from './post/posts.service';
+import { CreatePostByBlogIdInputModelType, UpdatePostInputModelType } from '../postsQuery/PostDto';
 import { UsersService } from '../superAdmin/users/users.service';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
@@ -53,7 +53,7 @@ export class BloggerController {
         return;
     }
 
-    @Post('blogs/:blogId/posts')
+    @Post('blogs/:blogId/postsQuery')
     @UseGuards(AccessTokenGuard)
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
         const blog = await this.bloggerService.getBlogById(blogId);
@@ -62,14 +62,14 @@ export class BloggerController {
         return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }
 
-    @Put('blogs/:blogId/posts/:postId')
+    @Put('blogs/:blogId/postsQuery/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     updatePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @Body() updateModel: UpdatePostInputModelType, @UserDecorator() user: User) {
         return this.postsService.updatePostByPostId(blogId, postId, updateModel, user.accountData.id);
     }
 
-    @Delete('blogs/:blogId/posts/:postId')
+    @Delete('blogs/:blogId/postsQuery/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async deletePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @UserDecorator() user: User) {
