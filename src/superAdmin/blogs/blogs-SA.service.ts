@@ -15,6 +15,7 @@ export class BlogsSAService {
     }
 
     async banBlog(blogId: string, updateModel: BanBlogUpdateModel) {
-        return await this.blogsSaRepository.banBlog(blogId, updateModel);
+        const banDate = new Date().toISOString();
+        return await this.blogsSaRepository.banBlog(blogId, updateModel, banDate);
     }
 }

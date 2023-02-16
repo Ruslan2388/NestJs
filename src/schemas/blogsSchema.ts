@@ -2,10 +2,16 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type BlogDocument = Blog & Document;
 
-class blogOwnerInfo {
+class BlogOwnerInfo {
     userId: string;
     userLogin: string;
 }
+
+class BanInfo {
+    isBanned: boolean;
+    banDate: string;
+}
+
 @Schema()
 export class Blog {
     @Prop()
@@ -21,8 +27,8 @@ export class Blog {
     @Prop()
     isMembership: boolean;
     @Prop()
-    blogOwnerInfo: blogOwnerInfo;
+    blogOwnerInfo: BlogOwnerInfo;
     @Prop()
-    isBanned: boolean;
+    banInfo: BanInfo;
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

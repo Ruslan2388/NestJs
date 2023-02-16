@@ -7,9 +7,8 @@ import { Model } from 'mongoose';
 export class BlogsRepository {
     constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
     async getBlogs(queryData): Promise<Blog[] | any> {
-        const bannedBlog = await this.blogModel.distinct('id', { isBanned: true });
+        const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
         const filter: any = { id: { $nin: bannedBlog } };
-        console.log(bannedBlog);
         if (queryData.searchNameTerm) {
             filter.name = { $regex: queryData.searchNameTerm, $options: 'i' };
         }
@@ -33,8 +32,8 @@ export class BlogsRepository {
     }
 
     async getBlogById(blogId): Promise<Blog> | null {
-        const bannedBlog = await this.blogModel.distinct('id', { isBanned: true });
-        const blog = await this.blogModel.findOne({ $and: [{ id: blogId }, { id: { $nin: bannedBlog } }] }, { _id: 0, __v: 0, blogOwnerInfo: 0, isBanned: 0 });
+        const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
+        const blog = await this.blogModel.findOne({ $and: [{ id: blogId }, { id: { $nin: bannedBlog } }] }, { _id: 0, __v: 0, blogOwnerInfo: 0, banInfo: 0 });
         return blog;
     }
 }

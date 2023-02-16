@@ -35,8 +35,8 @@ export class BlogsSARepository {
         return this.blogModel.updateOne({ id: blogId }, { 'blogOwnerInfo.userId': userId, 'blogOwnerInfo.login': login });
     }
 
-    async banBlog(blogId: string, updateModel: BanBlogUpdateModel) {
+    async banBlog(blogId: string, updateModel: BanBlogUpdateModel, banDate: string) {
         console.log('sds');
-        return this.blogModel.updateOne({ id: blogId }, { isBanned: updateModel.isBanned });
+        return this.blogModel.updateOne({ id: blogId }, { banInfo: { isBanned: updateModel.isBanned, banDate: banDate } });
     }
 }
