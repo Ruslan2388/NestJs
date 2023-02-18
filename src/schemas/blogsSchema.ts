@@ -30,5 +30,7 @@ export class Blog {
     blogOwnerInfo: BlogOwnerInfo;
     @Prop()
     banInfo: BanInfo;
+    @Prop()
+    bannedUsers: [];
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);

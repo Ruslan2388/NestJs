@@ -12,6 +12,13 @@ class commentatorInfo {
     login: string;
 }
 
+class PostInfo {
+    id: string;
+    title: string;
+    blogId: string;
+    blogName: string;
+}
+
 @Schema()
 export class Comments {
     @Prop()
@@ -26,5 +33,7 @@ export class Comments {
     commentatorInfo: commentatorInfo;
     @Prop()
     likesInfo: likesInfo;
+    @Prop()
+    postInfo: PostInfo;
 }
 export const CommentsSchema = SchemaFactory.createForClass(Comments);

@@ -23,7 +23,7 @@ export class UpdateBlogInputModelType {
     websiteUrl: string;
 }
 
-function transformSortDirection(value: string): string {
+export function transformSortDirection(value: string): string {
     return value === 'asc' ? 'asc' : 'desc';
 }
 

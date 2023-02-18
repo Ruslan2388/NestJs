@@ -1,11 +1,11 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BlogsSAService } from './blogs/blogs-SA.service';
-import { BlogQueryDto } from '../blogger/BlogDto';
 import { BasicAuthGuard } from '../guard/basicAuthGuard';
 import { BlogsService } from '../blogsQuery/blogs.service';
 import { UsersService } from './users/users.service';
 import { BanUserUpdateModel, CreateUserInputModelType, UserQueryDto } from './users/UserDto';
 import { BanBlogUpdateModel } from './blogs/superAdminBlogDTO';
+import { BlogQueryDto } from '../blogsQuery/BlogDto';
 
 @Controller('sa')
 export class SuperAdminController {

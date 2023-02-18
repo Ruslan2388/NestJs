@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../schemas/blogsSchema';
 import { Model } from 'mongoose';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
+import { BanUserForBlogUpdateModel } from '../superAdmin/users/UserDto';
+import { CommentQueryDto } from '../comments/CommentsDto';
 
 @Injectable()
 export class BloggerRepository {
@@ -23,17 +25,12 @@ export class BloggerRepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const items = (await this.blogModel
-            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0, banInfo: 0 })
+            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0, banInfo: 0, bannedUsers: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .lean()) as [];
         return { pagesCount, page, pageSize, totalCount, items };
-    }
-
-    async getBlogById(blogId): Promise<Blog> | null {
-        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0, banInfo: 0 });
-        return blog;
     }
 
     async createBlog(newBlog: CreateBlogInputModelType) {
@@ -61,5 +58,16 @@ export class BloggerRepository {
     }
     async deleteAllBlogs() {
         return this.blogModel.deleteMany({});
+    }
+
+    async banUserForBlog(userId: string, updateModel: BanUserForBlogUpdateModel) {
+        if (updateModel.isBanned === false) return this.blogModel.updateOne({ id: updateModel.blogId }, { $pull: { bannedUsers: userId } });
+        return this.blogModel.updateOne({ id: updateModel.blogId }, { $addToSet: { bannedUsers: userId } });
+    }
+
+    async checkUserOnBan(blogId: string, userId: string) {
+        const blog = await this.blogModel.findOne({ id: blogId, bannedUsers: { $in: [userId] } }, { id: 1 });
+        if (blog) return true;
+        return false;
     }
 }

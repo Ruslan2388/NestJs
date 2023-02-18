@@ -154,7 +154,7 @@ export class QueryPostsRepository {
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
-    async getPostsById(postId: string, userId): Promise<Post | null> {
+    async getPostsById(postId: string, userId: string): Promise<Post | null> {
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
         const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
         const items = await this.PostsModel.aggregate([

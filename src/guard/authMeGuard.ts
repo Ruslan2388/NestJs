@@ -16,7 +16,7 @@ export class AccessTokenGuard implements CanActivate {
         const accessToken = request.headers.authorization.split(' ')[1];
         const userId = await this.userService.getUserIdByAccessToken(accessToken);
         if (!userId) throw new UnauthorizedException();
-        const user = await this.userService.getUserById(userId);
+        const user = await this.userService.getUserByIdAc(userId);
         if (user.accountData.banInfo.isBanned) throw new UnauthorizedException();
         if (user) {
             request.user = user;

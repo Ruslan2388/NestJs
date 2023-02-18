@@ -23,7 +23,7 @@ export class BlogsRepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const items = (await this.blogModel
-            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0, isBanned: 0 })
+            .find(filter, { _id: 0, __v: 0, blogOwnerInfo: 0, isBanned: 0, bannedUsers: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize)
@@ -33,7 +33,7 @@ export class BlogsRepository {
 
     async getBlogById(blogId): Promise<Blog> | null {
         const bannedBlog = await this.blogModel.distinct('id', { 'banInfo.isBanned': true });
-        const blog = await this.blogModel.findOne({ $and: [{ id: blogId }, { id: { $nin: bannedBlog } }] }, { _id: 0, __v: 0, blogOwnerInfo: 0, banInfo: 0 });
+        const blog = await this.blogModel.findOne({ $and: [{ id: blogId }, { id: { $nin: bannedBlog } }] }, { _id: 0, __v: 0, blogOwnerInfo: 0, banInfo: 0, bannedUsers: 0 });
         return blog;
     }
 }

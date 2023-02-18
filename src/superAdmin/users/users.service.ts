@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { add } from 'date-fns';
-import { CreateUserInputModelType } from './UserDto';
+import { BanUserForBlogUpdateModel, CreateUserInputModelType } from './UserDto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
@@ -18,6 +18,12 @@ export class UsersService {
     async getUserById(userId) {
         const user = await this.usersRepository.getUserById(userId);
         if (!user) throw new NotFoundException();
+        return user;
+    }
+
+    async getUserByIdAc(userId) {
+        const user = await this.usersRepository.getUserById(userId);
+        if (!user) throw new UnauthorizedException();
         return user;
     }
 

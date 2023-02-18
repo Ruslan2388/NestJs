@@ -18,6 +18,19 @@ export class CreateUserInputModelType {
     email: string;
 }
 
+export class BanUserForBlogUpdateModel {
+    @IsBoolean()
+    isBanned: boolean;
+
+    @Length(20, 40)
+    @IsString()
+    banReason: string;
+
+    @Length(5, 20)
+    @IsString()
+    blogId: string;
+}
+
 export class BanUserUpdateModel {
     @IsBoolean()
     isBanned: boolean;

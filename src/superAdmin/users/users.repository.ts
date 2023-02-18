@@ -4,6 +4,7 @@ import { User, UserDocument } from '../../schemas/usersSchema';
 import { Model } from 'mongoose';
 import { UserDecorator } from '../../decorators/user-param.decorator';
 import { UserResponseType } from '../../helper/pagination';
+import { BanUserForBlogUpdateModel } from './UserDto';
 
 @Injectable()
 export class UsersRepository {

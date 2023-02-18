@@ -23,7 +23,7 @@ export class BlogsSARepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const items = (await this.blogModel
-            .find(filter, { _id: 0, __v: 0 })
+            .find(filter, { _id: 0, __v: 0, bannedUsers: 0 })
             .sort([[queryData.sortBy, queryData.sortDirection]])
             .skip((page - 1) * pageSize)
             .limit(pageSize)

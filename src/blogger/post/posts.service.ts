@@ -4,19 +4,20 @@ import { Post } from '../../schemas/postsSchema';
 import { CreatePostByBlogIdInputModelType, CreatePostInputModelType, UpdatePostInputModelType } from '../../postsQuery/PostDto';
 import { BloggerRepository } from '../blogger.repository';
 import { NewestLikesType } from '../../helper/pagination';
+import { BlogsRepository } from '../../blogsQuery/blogs.repository';
 
 @Injectable()
 export class PostsService {
-    constructor(protected postsRepository: PostsRepository, protected blogsRepository: BloggerRepository) {}
+    constructor(protected postsRepository: PostsRepository, protected queryBlogsRepository: BlogsRepository) {}
 
     async getPostsByBlogId(queryData, blogId: string, userId: string): Promise<Post[] | null | Post> {
-        const blog = await this.blogsRepository.getBlogById(blogId);
+        const blog = await this.queryBlogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         return this.postsRepository.getPostsByBlogId(queryData, blogId, userId);
     }
 
     async createPost(inputModel: CreatePostInputModelType) {
-        const blog = await this.blogsRepository.getBlogById(inputModel.blogId);
+        const blog = await this.queryBlogsRepository.getBlogById(inputModel.blogId);
         if (blog) {
             const newPost = {
                 id: new Date().valueOf().toString(),
@@ -60,7 +61,7 @@ export class PostsService {
     }
 
     async createPostsByBlogId(inputModel: CreatePostByBlogIdInputModelType, blogId: string, userId: string) {
-        const blog = await this.blogsRepository.getBlogById(blogId);
+        const blog = await this.queryBlogsRepository.getBlogById(blogId);
         if (!blog) {
             throw new NotFoundException();
         }
@@ -104,7 +105,7 @@ export class PostsService {
     }
 
     async updatePostByPostId(blogId: string, postId: string, updateModel: UpdatePostInputModelType, userId: string) {
-        const blog = await this.blogsRepository.getBlogById(blogId);
+        const blog = await this.queryBlogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
         const result = await this.postsRepository.updatePostByPostId(postId, updateModel, blogId);
@@ -118,7 +119,7 @@ export class PostsService {
     }
 
     async deletePostByBlogId(blogId: string, postId: string, userId: string) {
-        const blog = await this.blogsRepository.getBlogById(blogId);
+        const blog = await this.queryBlogsRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
         const result = await this.postsRepository.deletePostByBlogId(postId);
