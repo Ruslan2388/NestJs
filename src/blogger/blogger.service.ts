@@ -51,7 +51,8 @@ export class BloggerService {
     }
 
     async banUserForBlog(userId: string, updateModel: BanUserForBlogUpdateModel, ownerBlogUserId: string) {
-        const blog = await this.queryBlogsRepository.getBlogById(updateModel.blogId);
+        const blog = await this.bloggerRepository.getBlogById(updateModel.blogId);
+        if (!blog) throw new NotFoundException();
         console.log(blog.blogOwnerInfo.userId);
         if (blog.blogOwnerInfo.userId !== ownerBlogUserId) {
             throw new ForbiddenException();
