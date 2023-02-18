@@ -44,6 +44,7 @@ export class CommentsService {
         };
         await this.commentsRepository.createComments(newComment);
         delete newComment.parentId;
+        delete newComment.postInfo;
         return newComment;
     }
 

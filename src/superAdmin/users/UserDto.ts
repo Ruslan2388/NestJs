@@ -26,7 +26,7 @@ export class BanUserForBlogUpdateModel {
     @IsString()
     banReason: string;
 
-    @Length(5, 20)
+    @Length(4, 26)
     @IsString()
     blogId: string;
 }

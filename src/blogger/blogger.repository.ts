@@ -33,6 +33,11 @@ export class BloggerRepository {
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
+    async getBlogById(blogId): Promise<Blog> | null {
+        const blog = await this.blogModel.findOne({ id: blogId }, { _id: 0, __v: 0, banInfo: 0 });
+        return blog;
+    }
+
     async createBlog(newBlog: CreateBlogInputModelType) {
         try {
             return this.blogModel.create(newBlog);

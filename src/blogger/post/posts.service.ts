@@ -84,6 +84,7 @@ export class PostsService {
                 },
             };
             const result = this.postsRepository.createPost(newPost);
+
             if (!result) throw new BadRequestException([{ message: 'Bad', field: 'NotCreatePost' }]);
             return {
                 id: newPost.id,

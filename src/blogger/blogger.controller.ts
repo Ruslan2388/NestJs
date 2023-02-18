@@ -43,8 +43,9 @@ export class BloggerController {
     @Post('blogs/:blogId/posts')
     @UseGuards(AccessTokenGuard)
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
-        const blog = await this.queryBloggerService.getBlogById(blogId);
+        const blog = await this.bloggerService.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
+        console.log(blog);
         if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
         return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }
@@ -53,7 +54,7 @@ export class BloggerController {
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async updateBlogByBlogId(@Param('blogId') blogId, @Body() updateModel: UpdateBlogInputModelType, @UserDecorator() user: User) {
-        const blog = await this.queryBloggerService.getBlogById(blogId);
+        const blog = await this.bloggerService.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
         return await this.bloggerService.updateBlogByBlogId(blogId, updateModel);

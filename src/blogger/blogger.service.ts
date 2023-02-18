@@ -11,6 +11,9 @@ export class BloggerService {
     async getBlogger(queryData, user) {
         return this.bloggerRepository.getBlogger(queryData, user);
     }
+    async getBlogById(blogId) {
+        return this.bloggerRepository.getBlogById(blogId);
+    }
 
     async createBlog(inputModel: CreateBlogInputModelType, user) {
         const newBlog = {
