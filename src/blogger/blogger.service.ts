@@ -3,10 +3,11 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { BanUserForBlogUpdateModel } from '../superAdmin/users/UserDto';
 import { BlogsRepository } from '../blogsQuery/blogs.repository';
+import { UsersRepository } from '../superAdmin/users/users.repository';
 
 @Injectable()
 export class BloggerService {
-    constructor(protected bloggerRepository: BloggerRepository, protected queryBlogsRepository: BlogsRepository) {}
+    constructor(protected bloggerRepository: BloggerRepository, protected queryBlogsRepository: BlogsRepository, protected usersRepository: UsersRepository) {}
 
     async getBlogger(queryData, user) {
         return this.bloggerRepository.getBlogger(queryData, user);
@@ -51,6 +52,8 @@ export class BloggerService {
     }
 
     async banUserForBlog(userId: string, updateModel: BanUserForBlogUpdateModel, ownerBlogUserId: string) {
+        const user = await this.usersRepository.getUserById(userId);
+        if (!user) throw new NotFoundException();
         const blog = await this.bloggerRepository.getBlogById(updateModel.blogId);
         if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userId !== ownerBlogUserId) {
