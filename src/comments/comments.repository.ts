@@ -223,101 +223,101 @@ export class CommentsRepository {
         const page = Number(queryData.pageNumber);
         const pageSize = Number(queryData.pageSize);
         const bannedUser = await this.userModel.distinct('accountData.id', { 'accountData.banInfo.isBanned': true });
-        const items = await this.commentsModel
-            .aggregate([
-                { $match: { 'postInfo.id': { $in: allUsersPosts }, 'commentatorInfo.userId': { $nin: bannedUser } } },
-                {
-                    $lookup: {
-                        from: 'likes',
-                        localField: 'id',
-                        foreignField: 'parentId',
-                        pipeline: [
-                            {
-                                $match: {
-                                    status: 'Like',
-                                    userId: { $nin: bannedUser },
-                                },
-                            },
-                            { $count: 'count' },
-                        ],
-                        as: 'likesCount',
-                    },
-                },
-                {
-                    $lookup: {
-                        from: 'likes',
-                        localField: 'id',
-                        foreignField: 'parentId',
-                        pipeline: [
-                            {
-                                $match: {
-                                    status: 'Dislike',
-                                    userId: { $nin: bannedUser },
-                                },
-                            },
-                            {
-                                $count: 'count',
-                            },
-                        ],
-                        as: 'dislikesCount',
-                    },
-                },
-                {
-                    $lookup: {
-                        from: 'likes',
-                        localField: 'id',
-                        foreignField: 'parentId',
-                        pipeline: [
-                            {
-                                $match: { userId: userId },
-                            },
-                            {
-                                $project: { _id: 0, status: 1 },
-                            },
-                        ],
-                        as: 'myStatus',
-                    },
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        id: 1,
-                        postInfo: 1,
-                        content: 1,
-                        createdAt: 1,
-                        commentatorInfo: 1,
-                        'likesInfo.likesCount': {
-                            $cond: {
-                                if: { $eq: [{ $size: '$likesCount' }, 0] },
-                                then: 0,
-                                else: '$likesCount.count',
-                            },
-                        },
-                        'likesInfo.dislikesCount': {
-                            $cond: {
-                                if: { $eq: [{ $size: '$dislikesCount' }, 0] },
-                                then: 0,
-                                else: '$dislikesCount.count',
-                            },
-                        },
-                        'likesInfo.myStatus': {
-                            $cond: {
-                                if: { $eq: [{ $size: '$myStatus' }, 0] },
-                                then: 'None',
-                                else: '$myStatus.status',
-                            },
-                        },
-                        //
-                    },
-                },
-                { $unwind: '$likesInfo.likesCount' },
-                { $unwind: '$likesInfo.dislikesCount' },
-                { $unwind: '$likesInfo.myStatus' },
-            ])
-            .sort(objectSort)
-            .skip((page - 1) * pageSize)
-            .limit(pageSize);
-        //const items = await this.commentsModel.find({ 'postInfo.id': { $in: allUsersPosts } }, { _id: 0, __v: 0, parentId: 0 });
+        // const items = await this.commentsModel
+        //     .aggregate([
+        //         { $match: { 'postInfo.id': { $in: allUsersPosts }, 'commentatorInfo.userId': { $nin: bannedUser } } },
+        //         {
+        //             $lookup: {
+        //                 from: 'likes',
+        //                 localField: 'id',
+        //                 foreignField: 'parentId',
+        //                 pipeline: [
+        //                     {
+        //                         $match: {
+        //                             status: 'Like',
+        //                             userId: { $nin: bannedUser },
+        //                         },
+        //                     },
+        //                     { $count: 'count' },
+        //                 ],
+        //                 as: 'likesCount',
+        //             },
+        //         },
+        //         {
+        //             $lookup: {
+        //                 from: 'likes',
+        //                 localField: 'id',
+        //                 foreignField: 'parentId',
+        //                 pipeline: [
+        //                     {
+        //                         $match: {
+        //                             status: 'Dislike',
+        //                             userId: { $nin: bannedUser },
+        //                         },
+        //                     },
+        //                     {
+        //                         $count: 'count',
+        //                     },
+        //                 ],
+        //                 as: 'dislikesCount',
+        //             },
+        //         },
+        //         {
+        //             $lookup: {
+        //                 from: 'likes',
+        //                 localField: 'id',
+        //                 foreignField: 'parentId',
+        //                 pipeline: [
+        //                     {
+        //                         $match: { userId: userId },
+        //                     },
+        //                     {
+        //                         $project: { _id: 0, status: 1 },
+        //                     },
+        //                 ],
+        //                 as: 'myStatus',
+        //             },
+        //         },
+        //         {
+        //             $project: {
+        //                 _id: 0,
+        //                 id: 1,
+        //                 postInfo: 1,
+        //                 content: 1,
+        //                 createdAt: 1,
+        //                 commentatorInfo: 1,
+        //                 'likesInfo.likesCount': {
+        //                     $cond: {
+        //                         if: { $eq: [{ $size: '$likesCount' }, 0] },
+        //                         then: 0,
+        //                         else: '$likesCount.count',
+        //                     },
+        //                 },
+        //                 'likesInfo.dislikesCount': {
+        //                     $cond: {
+        //                         if: { $eq: [{ $size: '$dislikesCount' }, 0] },
+        //                         then: 0,
+        //                         else: '$dislikesCount.count',
+        //                     },
+        //                 },
+        //                 'likesInfo.myStatus': {
+        //                     $cond: {
+        //                         if: { $eq: [{ $size: '$myStatus' }, 0] },
+        //                         then: 'None',
+        //                         else: '$myStatus.status',
+        //                     },
+        //                 },
+        //                 //
+        //             },
+        //         },
+        //         { $unwind: '$likesInfo.likesCount' },
+        //         { $unwind: '$likesInfo.dislikesCount' },
+        //         { $unwind: '$likesInfo.myStatus' },
+        //     ])
+        //     .sort(objectSort)
+        //     .skip((page - 1) * pageSize)
+        //     .limit(pageSize);
+        const items = await this.commentsModel.find({ 'postInfo.id': { $in: allUsersPosts } }, { _id: 0, __v: 0, parentId: 0 });
 
         return { pagesCount, page, pageSize, totalCount, items };
     }
