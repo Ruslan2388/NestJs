@@ -30,7 +30,7 @@ export class UsersRepository {
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
         const pageSize = Number(queryData.pageSize);
         const result = await this.userModel
-            .find(filter, { _id: 0, __v: 0, emailConfirmation: 0 })
+            .find(filter, { _id: 0, __v: 0, emailConfirmation: 0, 'accountData.blogBanInfo': 0 })
             .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
             .limit(pageSize);
@@ -41,7 +41,7 @@ export class UsersRepository {
     }
 
     async getUserById(userId): Promise<User | null> {
-        return this.userModel.findOne({ 'accountData.id': userId }, { _id: 0, __v: 0, password: 0 });
+        return this.userModel.findOne({ 'accountData.id': userId }, { _id: 0, __v: 0, password: 0, 'accountData.blogBanInfo': 0 });
     }
 
     async getUserByLoginOrEmail(loginOrEmail: string) {
@@ -60,7 +60,7 @@ export class UsersRepository {
     async getBannedUsersForBlog(queryData, blogId: string) {
         const bannedUserId: any = await this.blogModel.distinct('bannedUsers', { id: blogId });
         const filter = await this._getUsersFilterForQueryBanUser(queryData, bannedUserId);
-        console.log(bannedUserId);
+        console.log(filter);
         const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
@@ -70,7 +70,7 @@ export class UsersRepository {
             .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
             .skip((page - 1) * pageSize)
             .limit(pageSize);
-        const items = this._mapUserDbToResponse(result);
+        const items = this._mapUserBanDbToResponse(result);
         return { pagesCount, page, pageSize, totalCount, items };
     }
 
@@ -169,7 +169,13 @@ export class UsersRepository {
             banInfo: { isBanned: u.accountData.banInfo.isBanned, banReason: u.accountData.banInfo.banReason, banDate: u.accountData.banInfo.banDate },
         }));
     }
-
+    _mapUserBanDbToResponse(@UserDecorator() users: User[]) {
+        return users.map((u) => ({
+            id: u.accountData.id,
+            login: u.accountData.login,
+            banInfo: { isBanned: u.accountData.blogBanInfo.isBanned, banReason: u.accountData.blogBanInfo.banReason, banDate: u.accountData.blogBanInfo.banDate },
+        }));
+    }
     private async _getUsersFilterForQueryBanUser(queryData, bannedUserId) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {

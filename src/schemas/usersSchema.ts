@@ -8,6 +8,12 @@ class BanInfo {
     banDate: string;
     banReason: string;
 }
+class BlogBanInfo {
+    isBanned: string;
+    banReason: string;
+    blogId: string;
+    banDate: string;
+}
 
 class AccountData {
     @Prop()
@@ -22,6 +28,8 @@ class AccountData {
     createdAt: string;
     @Prop()
     banInfo: BanInfo;
+    @Prop()
+    blogBanInfo: BlogBanInfo;
 }
 class EmailConfirmation {
     @Prop()

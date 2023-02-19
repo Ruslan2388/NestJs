@@ -50,6 +50,7 @@ export class UsersService {
 
     async getBannedUsersForBlog(queryData, blogId: string, userId: string) {
         const blog = await this.bloggerRepository.getBlogById(blogId);
+        if (!blog) throw new NotFoundException();
         if (blog.blogOwnerInfo.userId !== userId) {
             throw new ForbiddenException();
         }
@@ -70,6 +71,7 @@ export class UsersService {
                     banReason: null,
                     banDate: null,
                 },
+                blogBanInfo: { isBanned: null, banReason: null, blogId: null, banDate: null },
             },
             emailConfirmation: {
                 confirmationCode: randomUUID(),

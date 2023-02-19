@@ -56,8 +56,8 @@ export class BloggerService {
         if (blog.blogOwnerInfo.userId !== ownerBlogUserId) {
             throw new ForbiddenException();
         }
-
-        return this.bloggerRepository.banUserForBlog(userId, updateModel);
+        const banDate = new Date().toISOString();
+        return this.bloggerRepository.banUserForBlog(userId, updateModel, banDate);
     }
 
     async deleteBlogByBlogId(blogId) {

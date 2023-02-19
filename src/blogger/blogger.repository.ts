@@ -5,10 +5,11 @@ import { Model } from 'mongoose';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { BanUserForBlogUpdateModel } from '../superAdmin/users/UserDto';
 import { CommentQueryDto } from '../comments/CommentsDto';
+import { User, UserDocument } from '../schemas/usersSchema';
 
 @Injectable()
 export class BloggerRepository {
-    constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+    constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>, @InjectModel(User.name) private userModel: Model<UserDocument>) {}
     async getBlogger(queryData, user): Promise<Blog[] | any> {
         const filter: any = { 'blogOwnerInfo.userLogin': user.accountData.login };
         if (queryData.searchNameTerm) {
@@ -65,8 +66,21 @@ export class BloggerRepository {
         return this.blogModel.deleteMany({});
     }
 
-    async banUserForBlog(userId: string, updateModel: BanUserForBlogUpdateModel) {
-        if (updateModel.isBanned === false) return this.blogModel.updateOne({ id: updateModel.blogId }, { $pull: { bannedUsers: userId } });
+    async banUserForBlog(userId: string, updateModel: BanUserForBlogUpdateModel, banDate: string) {
+        if (updateModel.isBanned === false) {
+            const banDateFalse = null;
+            await this.userModel.updateOne(
+                { 'accountData.id': userId },
+                { blogBanInfo: { isBanned: updateModel.isBanned, banReason: updateModel.banReason, blogId: updateModel.blogId, banDate: banDateFalse } },
+            );
+            return this.blogModel.updateOne({ id: updateModel.blogId }, { $pull: { bannedUsers: userId } });
+        }
+        const user = await this.userModel.find({ 'accountData.id': userId });
+        console.log(user);
+        await this.userModel.updateOne(
+            { 'accountData.id': userId },
+            { 'accountData.blogBanInfo': { isBanned: updateModel.isBanned, banReason: updateModel.banReason, blogId: updateModel.blogId, banDate: banDate } },
+        );
         return this.blogModel.updateOne({ id: updateModel.blogId }, { $addToSet: { bannedUsers: userId } });
     }
 
