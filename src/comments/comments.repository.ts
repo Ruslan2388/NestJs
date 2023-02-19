@@ -285,6 +285,7 @@ export class CommentsRepository {
                         postInfo: 1,
                         content: 1,
                         createdAt: 1,
+                        commentatorInfo: 1,
                         'likesInfo.likesCount': {
                             $cond: {
                                 if: { $eq: [{ $size: '$likesCount' }, 0] },
