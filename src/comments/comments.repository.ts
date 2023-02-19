@@ -282,9 +282,8 @@ export class CommentsRepository {
                     $project: {
                         _id: 0,
                         id: 1,
+                        postInfo: 1,
                         content: 1,
-                        'commentatorInfo.userId': 1,
-                        'commentatorInfo.userLogin': 1,
                         createdAt: 1,
                         'likesInfo.likesCount': {
                             $cond: {
