@@ -65,7 +65,6 @@ export class PostsService {
         if (!blog) {
             throw new NotFoundException();
         }
-        console.log(userId);
         if (blog) {
             const newPost = {
                 id: new Date().valueOf().toString(),

@@ -154,7 +154,6 @@ export class PostsRepository {
     }
 
     async createPost(newPost): Promise<Post | null> {
-        console.log(newPost.userId);
         try {
             return this.PostsModel.create(newPost);
         } catch (e) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { add } from 'date-fns';
 import { BanUserForBlogUpdateModel, CreateUserInputModelType } from './UserDto';
@@ -6,10 +6,16 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { EmailService } from '../../helper/email.service';
+import { BloggerRepository } from '../../blogger/blogger.repository';
 
 @Injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository, protected jwtService: JwtService, protected emailService: EmailService) {}
+    constructor(
+        protected usersRepository: UsersRepository,
+        protected jwtService: JwtService,
+        protected emailService: EmailService,
+        protected bloggerRepository: BloggerRepository,
+    ) {}
 
     async getUsers(queryData) {
         return await this.usersRepository.getUsers(queryData);
@@ -40,6 +46,14 @@ export class UsersService {
         } catch (error) {
             return null;
         }
+    }
+
+    async getBannedUsersForBlog(queryData, blogId: string, userId: string) {
+        const blog = await this.bloggerRepository.getBlogById(blogId);
+        if (blog.blogOwnerInfo.userId !== userId) {
+            throw new ForbiddenException();
+        }
+        return this.usersRepository.getBannedUsersForBlog(queryData, blogId);
     }
 
     async createUser(inputModel: CreateUserInputModelType) {

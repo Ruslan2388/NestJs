@@ -36,7 +36,6 @@ export class BlogsSARepository {
     }
 
     async banBlog(blogId: string, updateModel: BanBlogUpdateModel, banDate: string) {
-        console.log('sds');
         return this.blogModel.updateOne({ id: blogId }, { banInfo: { isBanned: updateModel.isBanned, banDate: banDate } });
     }
 }

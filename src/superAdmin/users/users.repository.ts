@@ -5,10 +5,11 @@ import { Model } from 'mongoose';
 import { UserDecorator } from '../../decorators/user-param.decorator';
 import { UserResponseType } from '../../helper/pagination';
 import { BanUserForBlogUpdateModel } from './UserDto';
+import { Blog, BlogDocument } from '../../schemas/blogsSchema';
 
 @Injectable()
 export class UsersRepository {
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, @InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
     async getUsers(queryData): Promise<User[] | any> {
         let banQuery;
@@ -23,6 +24,7 @@ export class UsersRepository {
                 banQuery = Boolean;
         }
         const filter = await this._getUsersFilterForQuery(queryData, banQuery);
+
         const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
@@ -53,6 +55,23 @@ export class UsersRepository {
 
     async getUserByConfirmationCode(code: string) {
         return this.userModel.findOne({ 'emailConfirmation.confirmationCode': code }, { _id: 0, __v: 0, password: 0 });
+    }
+
+    async getBannedUsersForBlog(queryData, blogId: string) {
+        const bannedUserId: any = await this.blogModel.distinct('bannedUsers', { id: blogId });
+        const filter = await this._getUsersFilterForQueryBanUser(queryData, bannedUserId);
+        console.log(bannedUserId);
+        const totalCount = await this.userModel.countDocuments(filter);
+        const page = Number(queryData.pageNumber);
+        const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));
+        const pageSize = Number(queryData.pageSize);
+        const result = await this.userModel
+            .find(filter, { _id: 0, __v: 0, emailConfirmation: 0, email: 0 })
+            .sort({ [`accountData.${queryData.sortBy}`]: queryData.sortDirection })
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
+        const items = this._mapUserDbToResponse(result);
+        return { pagesCount, page, pageSize, totalCount, items };
     }
 
     async createUser(newUser): Promise<User | null> {
@@ -93,6 +112,19 @@ export class UsersRepository {
         return result.matchedCount === 1;
     }
 
+    async banUser(userId: number, isBanned: boolean, banReason: string, banDate: string) {
+        if (isBanned === true)
+            return this.userModel.updateOne(
+                { 'accountData.id': userId.toString() },
+                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': banReason, 'accountData.banInfo.banDate': banDate },
+            );
+        else
+            return this.userModel.updateOne(
+                { 'accountData.id': userId.toString() },
+                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': null, 'accountData.banInfo.banDate': null },
+            );
+    }
+
     async _getUsersFilterForQuery(queryData, banQuery: string) {
         if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
             return {
@@ -128,19 +160,6 @@ export class UsersRepository {
         return { 'accountData.banInfo.isBanned': banQuery };
     }
 
-    async banUser(userId: number, isBanned: boolean, banReason: string, banDate: string) {
-        if (isBanned === true)
-            return this.userModel.updateOne(
-                { 'accountData.id': userId.toString() },
-                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': banReason, 'accountData.banInfo.banDate': banDate },
-            );
-        else
-            return this.userModel.updateOne(
-                { 'accountData.id': userId.toString() },
-                { 'accountData.banInfo.isBanned': isBanned, 'accountData.banInfo.banReason': null, 'accountData.banInfo.banDate': null },
-            );
-    }
-
     _mapUserDbToResponse(@UserDecorator() users: User[]): UserResponseType[] {
         return users.map((u) => ({
             id: u.accountData.id,
@@ -149,5 +168,40 @@ export class UsersRepository {
             createdAt: u.accountData.createdAt,
             banInfo: { isBanned: u.accountData.banInfo.isBanned, banReason: u.accountData.banInfo.banReason, banDate: u.accountData.banInfo.banDate },
         }));
+    }
+
+    private async _getUsersFilterForQueryBanUser(queryData, bannedUserId) {
+        if (!queryData.searchEmailTerm && queryData.searchLoginTerm) {
+            return {
+                'accountData.login': { $regex: queryData.searchLoginTerm, $options: 'i' },
+                'accountData.id': { $in: bannedUserId },
+            };
+        }
+        if (queryData.searchEmailTerm && !queryData.searchLoginTerm) {
+            return {
+                'accountData.email': { $regex: queryData.searchEmailTerm, $options: 'i' },
+                'accountData.id': { $in: bannedUserId },
+            };
+        }
+        if (queryData.searchEmailTerm && queryData.searchLoginTerm) {
+            return {
+                $or: [
+                    {
+                        'accountData.login': {
+                            $regex: queryData.searchLoginTerm,
+                            $options: 'i',
+                        },
+                    },
+                    {
+                        'accountData.email': {
+                            $regex: queryData.searchEmailTerm,
+                            $options: 'i',
+                        },
+                    },
+                ],
+                'accountData.id': { $in: bannedUserId },
+            };
+        }
+        return { 'accountData.id': { $in: bannedUserId } };
     }
 }

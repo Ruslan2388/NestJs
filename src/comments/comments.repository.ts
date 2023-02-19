@@ -212,7 +212,6 @@ export class CommentsRepository {
             .sort(objectSort)
             .skip((page - 1) * pageSize)
             .limit(pageSize);
-        console.log(items);
         return { pagesCount, page, pageSize, totalCount, items };
     }
 

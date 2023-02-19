@@ -7,7 +7,7 @@ import { UsersService } from '../superAdmin/users/users.service';
 import { AccessTokenGuard } from '../guard/authMeGuard';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { User } from '../schemas/usersSchema';
-import { BanUserForBlogUpdateModel } from '../superAdmin/users/UserDto';
+import { BanUserForBlogUpdateModel, UserQueryDto } from '../superAdmin/users/UserDto';
 import { CommentQueryDto } from '../comments/CommentsDto';
 import { BlogQueryDto } from '../blogsQuery/BlogDto';
 import { CommentsService } from '../comments/comments.service';
@@ -20,6 +20,7 @@ export class BloggerController {
         protected postsService: PostsService,
         protected commentsService: CommentsService,
         protected queryBloggerService: BlogsService,
+        protected usersService: UsersService,
     ) {}
 
     @UseGuards(AccessTokenGuard)
@@ -34,6 +35,12 @@ export class BloggerController {
         return await this.commentsService.getAllComments(queryData, user.accountData.id);
     }
 
+    @UseGuards(AccessTokenGuard)
+    @Get('users/blog/:blogId')
+    async getBannedUsers(@Param('blogId') blogId, @UserDecorator() user: User, @Query() queryData: UserQueryDto) {
+        return this.usersService.getBannedUsersForBlog(queryData, blogId, user.accountData.id);
+    }
+
     @Post('blogs')
     @UseGuards(AccessTokenGuard)
     createBlog(@Body() inputModel: CreateBlogInputModelType, @UserDecorator() user: User) {
@@ -45,7 +52,6 @@ export class BloggerController {
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
         const blog = await this.bloggerService.getBlogById(blogId);
         if (!blog) throw new NotFoundException();
-        console.log(blog);
         if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
         return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
     }

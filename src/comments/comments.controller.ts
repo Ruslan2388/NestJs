@@ -44,7 +44,6 @@ export class CommentsController {
     async createLikeByComment(@Param('commentId') commentId, @Req() request: Request, @UserDecorator() user: User, @Body() inputModel: LikeInputModel) {
         const comment = await this.commentsService.getCommentById(commentId, user.accountData.id);
         if (!comment) throw new NotFoundException();
-        console.log(user.accountData.id);
         return await this.commentsService.createLikeByComment(commentId, user.accountData.id, inputModel.likeStatus);
     }
 
