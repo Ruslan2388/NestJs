@@ -51,9 +51,21 @@ import { getMailConfig } from './helper/mail.config';
 import { CreateCommentForPostIdUseCase } from './comments/useCases/createCommentForPostIdUseCase';
 import { CreateBlogCommandUseCase } from './blogger/createBlogUseCase';
 import { banUserForBlogUseCase } from './comments/useCases/banUserForBlogUseCases';
+import { DeleteBlogByBlogIdUseCase } from './blogger/post/postUseCases/deleteBlogByBlogId';
+import { CreatePostByBlogIdUseCase } from './blogger/post/postUseCases/createPostsByBlogIdUseCase';
+import { UpdatePostByBlogIdUseCase } from './blogger/post/postUseCases/updatePostByPostId';
+import { DeletePostByBlogUseCase } from './blogger/post/postUseCases/deletePostByBlogIdUseCase';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
-const useCases = [CreateCommentForPostIdUseCase, CreateBlogCommandUseCase, banUserForBlogUseCase];
+const useCases = [
+    CreateCommentForPostIdUseCase,
+    CreateBlogCommandUseCase,
+    banUserForBlogUseCase,
+    CreatePostByBlogIdUseCase,
+    DeleteBlogByBlogIdUseCase,
+    UpdatePostByBlogIdUseCase,
+    DeletePostByBlogUseCase,
+];
 const services = [
     AppService,
     UsersService,

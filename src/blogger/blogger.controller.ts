@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BloggerService } from './blogger.service';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { PostsService } from './post/posts.service';
@@ -15,6 +15,10 @@ import { BlogsService } from '../blogsQuery/blogs.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from './createBlogUseCase';
 import { banUserForBlogCommand } from '../comments/useCases/banUserForBlogUseCases';
+import { CreatePostByBlogIdCommand } from './post/postUseCases/createPostsByBlogIdUseCase';
+import { DeleteBlogByBlogIdCommand } from './post/postUseCases/deleteBlogByBlogId';
+import { UpdatePostByBlogCommand } from './post/postUseCases/updatePostByPostId';
+import { DeletePostByBlogIdCommand } from './post/postUseCases/deletePostByBlogIdUseCase';
 
 @Controller('blogger')
 export class BloggerController {
@@ -49,33 +53,26 @@ export class BloggerController {
     @UseGuards(AccessTokenGuard)
     createBlog(@Body() inputModel: CreateBlogInputModelType, @UserDecorator() user: User) {
         return this.commandBus.execute(new CreateBlogCommand(inputModel, user));
-        //return this.bloggerService.createBlog(inputModel, user);
     }
 
     @Post('blogs/:blogId/posts')
     @UseGuards(AccessTokenGuard)
     async createPostsByBlogId(@Body() inputModel: CreatePostByBlogIdInputModelType, @Param('blogId') blogId: string, @UserDecorator() user: User) {
-        const blog = await this.bloggerService.getBlogById(blogId);
-        if (!blog) throw new NotFoundException();
-        if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
-        return await this.postsService.createPostsByBlogId(inputModel, blogId, user.accountData.id);
+        return await this.commandBus.execute(new CreatePostByBlogIdCommand(inputModel, blogId, user));
     }
 
     @Put('blogs/:blogId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async updateBlogByBlogId(@Param('blogId') blogId, @Body() updateModel: UpdateBlogInputModelType, @UserDecorator() user: User) {
-        const blog = await this.bloggerService.getBlogById(blogId);
-        if (!blog) throw new NotFoundException();
-        if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
-        return await this.bloggerService.updateBlogByBlogId(blogId, updateModel);
+        return await this.bloggerService.updateBlogByBlogId(blogId, updateModel, user);
     }
 
     @Put('blogs/:blogId/posts/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     updatePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @Body() updateModel: UpdatePostInputModelType, @UserDecorator() user: User) {
-        return this.postsService.updatePostByPostId(blogId, postId, updateModel, user.accountData.id);
+        return this.commandBus.execute(new UpdatePostByBlogCommand(blogId, postId, updateModel, user.accountData.id));
     }
 
     @Put('/users/:userId/ban')
@@ -83,27 +80,19 @@ export class BloggerController {
     @UseGuards(AccessTokenGuard)
     async banUserForBlog(@Param('userId') userId, @Body() updateModel: BanUserForBlogUpdateModel, @UserDecorator() user: User) {
         return this.commandBus.execute(new banUserForBlogCommand(userId, updateModel, user.accountData.id));
-        //return await this.bloggerService.banUserForBlog(userId, updateModel, user.accountData.id);
     }
 
     @Delete('blogs/:blogId/posts/:postId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async deletePostByBlogId(@Param('blogId') blogId, @Param('postId') postId, @UserDecorator() user: User) {
-        return this.postsService.deletePostByBlogId(blogId, postId, user.accountData.id);
+        return this.commandBus.execute(new DeletePostByBlogIdCommand(blogId, postId, user.accountData.id));
     }
 
     @Delete('blogs/:blogId')
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async deleteBlogByBlogId(@Param('blogId') blogId: string, @UserDecorator() user: User) {
-        const blog = await this.queryBloggerService.getBlogById(blogId);
-        if (!blog) throw new NotFoundException();
-        if (blog.blogOwnerInfo.userLogin !== user.accountData.login) throw new ForbiddenException();
-        const result = await this.bloggerService.deleteBlogByBlogId(blogId);
-        if (!result) {
-            throw new NotFoundException();
-        }
-        return;
+        return this.commandBus.execute(new DeleteBlogByBlogIdCommand(blogId, user));
     }
 }

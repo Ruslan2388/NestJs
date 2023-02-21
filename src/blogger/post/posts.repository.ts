@@ -178,19 +178,6 @@ export class PostsRepository {
         return this.PostsModel.deleteMany({});
     }
 
-    async createLikeByPost(postId, userId: string, likeStatus: string, login: string, createdAt: string) {
-        await this.LikeModel.updateOne(
-            { parentId: postId, userId: userId },
-            {
-                status: likeStatus,
-                login: login,
-                createdAt: createdAt,
-            },
-            { upsert: true },
-        );
-        return true;
-    }
-
     async deletePostByBlogId(postId: string) {
         const result = await this.PostsModel.deleteOne({ id: postId });
         return result.deletedCount;
