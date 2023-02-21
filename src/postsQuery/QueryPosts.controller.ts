@@ -9,10 +9,12 @@ import { Request } from 'express';
 import { UsersService } from '../superAdmin/users/users.service';
 import { LikeInputModel } from '../like/likeDto';
 import { QueryPostsService } from './QueryPosts.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateCommentsForPostIdCommand } from '../comments/useCases/createCommentForPostIdUseCase';
 
 @Controller('posts')
 export class QueryPostsController {
-    constructor(protected queryPostsService: QueryPostsService, protected commentsService: CommentsService, protected usersService: UsersService) {}
+    constructor(protected queryPostsService: QueryPostsService, protected commentsService: CommentsService, protected usersService: UsersService, private commandBus: CommandBus) {}
 
     @Get()
     async getPosts(@Query() queryData: PostQueryDto, @Req() request: Request) {
@@ -66,7 +68,7 @@ export class QueryPostsController {
     @Post(':postId/comments')
     @UseGuards(AccessTokenGuard)
     async createComment(@Param('postId') postId, @UserDecorator() user: User, @Body() inputModel: CreateCommentsInputModel) {
-        return await this.commentsService.createCommentByPostId(inputModel.content, postId, user);
+        return this.commandBus.execute(new CreateCommentsForPostIdCommand(inputModel.content, postId, user));
     }
 
     @Put(':postId/like-status')

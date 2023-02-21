@@ -12,6 +12,9 @@ import { CommentQueryDto } from '../comments/CommentsDto';
 import { BlogQueryDto } from '../blogsQuery/BlogDto';
 import { CommentsService } from '../comments/comments.service';
 import { BlogsService } from '../blogsQuery/blogs.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateBlogCommand } from './createBlogUseCase';
+import { banUserForBlogCommand } from '../comments/useCases/banUserForBlogUseCases';
 
 @Controller('blogger')
 export class BloggerController {
@@ -21,6 +24,7 @@ export class BloggerController {
         protected commentsService: CommentsService,
         protected queryBloggerService: BlogsService,
         protected usersService: UsersService,
+        private commandBus: CommandBus,
     ) {}
 
     @UseGuards(AccessTokenGuard)
@@ -44,7 +48,8 @@ export class BloggerController {
     @Post('blogs')
     @UseGuards(AccessTokenGuard)
     createBlog(@Body() inputModel: CreateBlogInputModelType, @UserDecorator() user: User) {
-        return this.bloggerService.createBlog(inputModel, user);
+        return this.commandBus.execute(new CreateBlogCommand(inputModel, user));
+        //return this.bloggerService.createBlog(inputModel, user);
     }
 
     @Post('blogs/:blogId/posts')
@@ -77,7 +82,8 @@ export class BloggerController {
     @HttpCode(204)
     @UseGuards(AccessTokenGuard)
     async banUserForBlog(@Param('userId') userId, @Body() updateModel: BanUserForBlogUpdateModel, @UserDecorator() user: User) {
-        return await this.bloggerService.banUserForBlog(userId, updateModel, user.accountData.id);
+        return this.commandBus.execute(new banUserForBlogCommand(userId, updateModel, user.accountData.id));
+        //return await this.bloggerService.banUserForBlog(userId, updateModel, user.accountData.id);
     }
 
     @Delete('blogs/:blogId/posts/:postId')

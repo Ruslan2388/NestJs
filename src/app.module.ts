@@ -1,49 +1,59 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { MailerModule } from '@nestjs-modules/mailer';
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { BloggerController } from './blogger/blogger.controller';
 import { DeleteAllController } from './DeleteALl/DeleteAll.controller';
+import { QueryPostsController } from './postsQuery/QueryPosts.controller';
+import { CommentsController } from './comments/comments.controller';
+import { DevicesController } from './devices/devices.controller';
+import { SuperAdminController } from './superAdmin/superAdmin.controller.';
+import { AuthController } from './auth/auth.controller';
+import { BlogsController } from './blogsQuery/blogs.controller';
+
 import { AppService } from './app.service';
+import { CommentsService } from './comments/comments.service';
 import { UsersService } from './superAdmin/users/users.service';
 import { BloggerService } from './blogger/blogger.service';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { EmailService } from './helper/email.service';
+import { PostsService } from './blogger/post/posts.service';
+import { DevicesService } from './devices/devices.service';
+import { BlogsSAService } from './superAdmin/blogs/blogs-SA.service';
+import { BlogsService } from './blogsQuery/blogs.service';
+import { QueryPostsService } from './postsQuery/QueryPosts.service';
+
 import { UsersRepository } from './superAdmin/users/users.repository';
 import { BloggerRepository } from './blogger/blogger.repository';
-import { QueryPostsController } from './postsQuery/QueryPosts.controller';
-import { PostsService } from './blogger/post/posts.service';
+import { AuthRepository } from './auth/auth.repository';
+import { CommentsRepository } from './comments/comments.repository';
 import { PostsRepository } from './blogger/post/posts.repository';
+import { DevicesRepository } from './devices/devices.repository';
+import { BlogsSARepository } from './superAdmin/blogs/blogs-SA.repository';
+import { QueryPostsRepository } from './postsQuery/QueryPosts.repository';
+import { BlogsRepository } from './blogsQuery/blogs.repository';
+
 import { User, UserSchema } from './schemas/usersSchema';
 import { Blog, BlogSchema } from './schemas/blogsSchema';
 import { Post, PostScheme } from './schemas/postsSchema';
-import { AuthController } from './auth/auth.controller';
-import { AuthService } from './auth/auth.service';
-import { AuthRepository } from './auth/auth.repository';
-import { JwtService } from '@nestjs/jwt';
 import { Device, DeviceSchema } from './schemas/deviceSchema';
-import { IsEmailInInDB, IsLoginInDB } from './validator/registerValidator';
-import { EmailService } from './helper/email.service';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { getMailConfig } from './helper/mail.config';
-import { ResendEmailValidator } from './validator/resendEmailValidator';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { CommentsController } from './comments/comments.controller';
-import { CommentsRepository } from './comments/comments.repository';
-import { CommentsService } from './comments/comments.service';
 import { Comments, CommentsSchema } from './schemas/commentsSchema';
 import { Like, LikeSchema } from './schemas/likeSchema';
-import { DevicesService } from './devices/devices.service';
-import { DevicesRepository } from './devices/devices.repository';
-import { DevicesController } from './devices/devices.controller';
-import { SuperAdminController } from './superAdmin/superAdmin.controller.';
-import { BlogsSAService } from './superAdmin/blogs/blogs-SA.service';
-import { BlogsSARepository } from './superAdmin/blogs/blogs-SA.repository';
-import { BlogsController } from './blogsQuery/blogs.controller';
-import { BlogsService } from './blogsQuery/blogs.service';
-import { BlogsRepository } from './blogsQuery/blogs.repository';
-import { QueryPostsRepository } from './postsQuery/QueryPosts.repository';
-import { QueryPostsService } from './postsQuery/QueryPosts.service';
+
+import { IsEmailInInDB, IsLoginInDB } from './validator/registerValidator';
+import { ResendEmailValidator } from './validator/resendEmailValidator';
+import { getMailConfig } from './helper/mail.config';
+import { CreateCommentForPostIdUseCase } from './comments/useCases/createCommentForPostIdUseCase';
+import { CreateBlogCommandUseCase } from './blogger/createBlogUseCase';
+import { banUserForBlogUseCase } from './comments/useCases/banUserForBlogUseCases';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
+const useCases = [CreateCommentForPostIdUseCase, CreateBlogCommandUseCase, banUserForBlogUseCase];
 const services = [
     AppService,
     UsersService,
@@ -61,6 +71,7 @@ const services = [
 
 @Module({
     imports: [
+        CqrsModule,
         MailerModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
@@ -93,6 +104,7 @@ const services = [
         SuperAdminController,
     ],
     providers: [
+        ...useCases,
         ...services,
         PostsRepository,
         UsersRepository,

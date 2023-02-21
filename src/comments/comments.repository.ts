@@ -4,7 +4,6 @@ import { Comments, CommentsDocument } from '../schemas/commentsSchema';
 import { Model } from 'mongoose';
 import { Like, LikeDocument } from 'src/schemas/likeSchema';
 import { User, UserDocument } from '../schemas/usersSchema';
-import { CommentQueryDto } from './CommentsDto';
 import { Post, PostDocument } from '../schemas/postsSchema';
 
 @Injectable()
@@ -214,7 +213,7 @@ export class CommentsRepository {
             .limit(pageSize);
         return { pagesCount, page, pageSize, totalCount, items };
     }
-    //  { $match: { 'postInfo.id': { $in: allUsersPosts }, 'commentatorInfo.userId': { $nin: bannedUser } } },
+
     async getAllComments(queryData, userId) {
         const objectSort = { [queryData.sortBy]: queryData.sortDirection };
         const allUsersPosts = await this.postsModel.distinct('id', { userId: userId });

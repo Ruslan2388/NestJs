@@ -16,35 +16,6 @@ export class BloggerService {
         return this.bloggerRepository.getBlogById(blogId);
     }
 
-    async createBlog(inputModel: CreateBlogInputModelType, user) {
-        const newBlog = {
-            id: new Date().valueOf().toString(),
-            name: inputModel.name,
-            description: inputModel.description,
-            websiteUrl: inputModel.websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false,
-            blogOwnerInfo: {
-                userId: user.accountData.id,
-                userLogin: user.accountData.login,
-            },
-            banInfo: {
-                isBanned: false,
-                banDate: null,
-            },
-        };
-        const result = await this.bloggerRepository.createBlog(newBlog);
-        if (!result) throw new BadRequestException([{ message: 'Bad', field: 'CantCreateBlog' }]);
-        return {
-            id: newBlog.id,
-            name: newBlog.name,
-            description: newBlog.description,
-            websiteUrl: newBlog.websiteUrl,
-            createdAt: newBlog.createdAt,
-            isMembership: newBlog.isMembership,
-        };
-    }
-
     async updateBlogByBlogId(blogId: string, updateModel: UpdateBlogInputModelType) {
         const result = await this.bloggerRepository.updateBlogByBlogId(blogId, updateModel);
         if (!result) throw new NotFoundException();
