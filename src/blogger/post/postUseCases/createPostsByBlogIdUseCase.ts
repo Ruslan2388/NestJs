@@ -3,6 +3,7 @@ import { CreatePostByBlogIdInputModelType } from '../../../postsQuery/PostDto';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { BlogsRepository } from '../../../blogsQuery/blogs.repository';
 import { PostsRepository } from '../posts.repository';
+import { BloggerRepository } from '../../blogger.repository';
 
 export class CreatePostByBlogIdCommand {
     constructor(public inputModel: CreatePostByBlogIdInputModelType, public blogId: string, public user) {}
@@ -10,10 +11,12 @@ export class CreatePostByBlogIdCommand {
 
 @CommandHandler(CreatePostByBlogIdCommand)
 export class CreatePostByBlogIdUseCase implements ICommandHandler<CreatePostByBlogIdCommand> {
-    constructor(protected queryBlogsRepository: BlogsRepository, protected postsRepository: PostsRepository) {}
+    constructor(protected bloggerRepository: BloggerRepository, protected postsRepository: PostsRepository) {}
     async execute(command: CreatePostByBlogIdCommand) {
-        const blog = await this.queryBlogsRepository.getBlogById(command.blogId);
+        const blog = await this.bloggerRepository.getBlogById(command.blogId);
+        console.log(blog);
         if (blog.blogOwnerInfo.userLogin !== command.user.accountData.login) throw new ForbiddenException();
+
         if (!blog) {
             throw new NotFoundException();
         }
