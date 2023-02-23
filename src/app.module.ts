@@ -55,6 +55,7 @@ import { DeleteBlogByBlogIdUseCase } from './blogger/post/postUseCases/deleteBlo
 import { CreatePostByBlogIdUseCase } from './blogger/post/postUseCases/createPostsByBlogIdUseCase';
 import { UpdatePostByBlogIdUseCase } from './blogger/post/postUseCases/updatePostByPostId';
 import { DeletePostByBlogUseCase } from './blogger/post/postUseCases/deletePostByBlogIdUseCase';
+import { createUserUseCase } from './superAdmin/users/useCases/createUserUseCase';
 
 const validators = [IsLoginInDB, IsEmailInInDB, ResendEmailValidator];
 const useCases = [
@@ -65,6 +66,7 @@ const useCases = [
     DeleteBlogByBlogIdUseCase,
     UpdatePostByBlogIdUseCase,
     DeletePostByBlogUseCase,
+    createUserUseCase,
 ];
 const services = [
     AppService,

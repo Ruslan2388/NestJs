@@ -22,14 +22,7 @@ import { DeletePostByBlogIdCommand } from './post/postUseCases/deletePostByBlogI
 
 @Controller('blogger')
 export class BloggerController {
-    constructor(
-        protected bloggerService: BloggerService,
-        protected postsService: PostsService,
-        protected commentsService: CommentsService,
-        protected queryBloggerService: BlogsService,
-        protected usersService: UsersService,
-        private commandBus: CommandBus,
-    ) {}
+    constructor(protected bloggerService: BloggerService, protected commentsService: CommentsService, protected usersService: UsersService, private commandBus: CommandBus) {}
 
     @UseGuards(AccessTokenGuard)
     @Get('blogs')

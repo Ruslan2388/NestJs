@@ -11,10 +11,12 @@ import { User } from '../schemas/usersSchema';
 import { UserDecorator } from '../decorators/user-param.decorator';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { DevicesService } from '../devices/devices.service';
+import { createUserCommand } from '../superAdmin/users/useCases/createUserUseCase';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('auth')
 export class AuthController {
-    constructor(protected authService: AuthService, protected usersService: UsersService, protected deviceService: DevicesService) {}
+    constructor(protected authService: AuthService, protected usersService: UsersService, protected deviceService: DevicesService, private commandBus: CommandBus) {}
 
     @Get('me')
     @HttpCode(200)
@@ -27,7 +29,7 @@ export class AuthController {
     @Post('registration')
     @HttpCode(204)
     async register(@Body() inputModel: CreateUserInputModelType) {
-        return this.usersService.createUser(inputModel);
+        return this.commandBus.execute(new createUserCommand(inputModel));
     }
 
     @UseGuards(ThrottlerGuard)

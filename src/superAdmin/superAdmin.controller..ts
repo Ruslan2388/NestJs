@@ -6,10 +6,12 @@ import { UsersService } from './users/users.service';
 import { BanUserUpdateModel, CreateUserInputModelType, UserQueryDto } from './users/UserDto';
 import { BanBlogUpdateModel } from './blogs/superAdminBlogDTO';
 import { BlogQueryDto } from '../blogsQuery/BlogDto';
+import { CommandBus } from '@nestjs/cqrs';
+import { createUserCommand } from './users/useCases/createUserUseCase';
 
 @Controller('sa')
 export class SuperAdminController {
-    constructor(protected blogsSAService: BlogsSAService, protected blogService: BlogsService, protected usersService: UsersService) {}
+    constructor(protected blogsSAService: BlogsSAService, protected blogService: BlogsService, protected usersService: UsersService, private commandBus: CommandBus) {}
 
     @UseGuards(BasicAuthGuard)
     @Get('blogs')
@@ -29,7 +31,7 @@ export class SuperAdminController {
     @HttpCode(201)
     @UseGuards(BasicAuthGuard)
     createUsers(@Body() inputModel: CreateUserInputModelType) {
-        return this.usersService.createUser(inputModel);
+        return this.commandBus.execute(new createUserCommand(inputModel));
     }
 
     @UseGuards(BasicAuthGuard)
