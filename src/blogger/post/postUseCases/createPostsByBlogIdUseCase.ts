@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreatePostByBlogIdInputModelType } from '../../../postsQuery/PostDto';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../blogsQuery/blogs.repository';
 import { PostsRepository } from '../posts.repository';
 import { BloggerRepository } from '../../blogger.repository';
 
@@ -14,7 +13,6 @@ export class CreatePostByBlogIdUseCase implements ICommandHandler<CreatePostByBl
     constructor(protected bloggerRepository: BloggerRepository, protected postsRepository: PostsRepository) {}
     async execute(command: CreatePostByBlogIdCommand) {
         const blog = await this.bloggerRepository.getBlogById(command.blogId);
-        console.log(blog);
         if (blog.blogOwnerInfo.userLogin !== command.user.accountData.login) throw new ForbiddenException();
 
         if (!blog) {

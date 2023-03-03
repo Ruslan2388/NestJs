@@ -60,7 +60,6 @@ export class UsersRepository {
     async getBannedUsersForBlog(queryData, blogId: string) {
         const bannedUserId: any = await this.blogModel.distinct('bannedUsers', { id: blogId });
         const filter = await this._getUsersFilterForQueryBanUser(queryData, bannedUserId);
-        console.log(filter);
         const totalCount = await this.userModel.countDocuments(filter);
         const page = Number(queryData.pageNumber);
         const pagesCount = Number(Math.ceil(Number(totalCount) / queryData.pageSize));

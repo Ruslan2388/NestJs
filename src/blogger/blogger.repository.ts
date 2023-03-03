@@ -4,7 +4,6 @@ import { Blog, BlogDocument } from '../schemas/blogsSchema';
 import { Model } from 'mongoose';
 import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
 import { BanUserForBlogUpdateModel } from '../superAdmin/users/UserDto';
-import { CommentQueryDto } from '../comments/CommentsDto';
 import { User, UserDocument } from '../schemas/usersSchema';
 
 @Injectable()
@@ -76,7 +75,6 @@ export class BloggerRepository {
             return this.blogModel.updateOne({ id: updateModel.blogId }, { $pull: { bannedUsers: userId } });
         }
         const user = await this.userModel.find({ 'accountData.id': userId });
-        console.log(user);
         await this.userModel.updateOne(
             { 'accountData.id': userId },
             { 'accountData.blogBanInfo': { isBanned: updateModel.isBanned, banReason: updateModel.banReason, blogId: updateModel.blogId, banDate: banDate } },

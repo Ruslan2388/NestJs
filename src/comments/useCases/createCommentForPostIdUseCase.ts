@@ -13,10 +13,8 @@ export class CreateCommentsForPostIdCommand {
 export class CreateCommentForPostIdUseCase implements ICommandHandler<CreateCommentsForPostIdCommand> {
     constructor(private queryPostsRepository: QueryPostsRepository, private bloggerRepository: BloggerRepository, private commentsRepository: CommentsRepository) {}
     async execute(command: CreateCommentsForPostIdCommand) {
-        console.log('sadasdasd');
         const post = await this.queryPostsRepository.getPostsById(command.postId, command.user.accountData.id);
         if (!post) throw new NotFoundException();
-
         const blog = await this.bloggerRepository.checkUserOnBan(post.blogId, command.user.accountData.id);
         if (blog) throw new ForbiddenException();
         const newComment = {
