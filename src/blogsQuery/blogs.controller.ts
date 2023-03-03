@@ -18,7 +18,7 @@ export class BlogsController {
         return this.blogsService.getBlogById(blogId);
     }
 
-    @Get(':blogId/postsQuery')
+    @Get(':blogId/posts')
     async getPostsByBlogId(@Param('blogId') blogId: string, @Query() queryData: PostQueryDto, @Req() request: Request) {
         let authUserId = '';
         if (request.headers.authorization) {
