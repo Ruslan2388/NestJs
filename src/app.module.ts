@@ -93,7 +93,7 @@ const services = [
         }),
         ThrottlerModule.forRoot({
             ttl: 10,
-            limit: 8,
+            limit: 5,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(process.env.MONGO_URI),
