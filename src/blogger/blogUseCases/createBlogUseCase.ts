@@ -1,7 +1,7 @@
-import { CreateBlogInputModelType } from './BlogDto';
+import { CreateBlogInputModelType } from '../BlogDto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
-import { BloggerRepository } from './blogger.repository';
+import { BloggerRepository } from '../blogger.repository';
 
 export class CreateBlogCommand {
     constructor(public inputModel: CreateBlogInputModelType, public user) {}

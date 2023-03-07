@@ -13,7 +13,7 @@ import { BlogQueryDto } from '../blogsQuery/BlogDto';
 import { CommentsService } from '../comments/comments.service';
 import { BlogsService } from '../blogsQuery/blogs.service';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateBlogCommand } from './createBlogUseCase';
+import { CreateBlogCommand } from './blogUseCases/createBlogUseCase';
 import { banUserForBlogCommand } from '../comments/useCases/banUserForBlogUseCases';
 import { CreatePostByBlogIdCommand } from './post/postUseCases/createPostsByBlogIdUseCase';
 import { DeleteBlogByBlogIdCommand } from './post/postUseCases/deleteBlogByBlogId';

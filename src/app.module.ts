@@ -49,7 +49,7 @@ import { IsEmailInInDB, IsLoginInDB } from './validator/registerValidator';
 import { ResendEmailValidator } from './validator/resendEmailValidator';
 import { getMailConfig } from './helper/mail.config';
 import { CreateCommentForPostIdUseCase } from './comments/useCases/createCommentForPostIdUseCase';
-import { CreateBlogCommandUseCase } from './blogger/createBlogUseCase';
+import { CreateBlogCommandUseCase } from './blogger/blogUseCases/createBlogUseCase';
 import { banUserForBlogUseCase } from './comments/useCases/banUserForBlogUseCases';
 import { DeleteBlogByBlogIdUseCase } from './blogger/post/postUseCases/deleteBlogByBlogId';
 import { CreatePostByBlogIdUseCase } from './blogger/post/postUseCases/createPostsByBlogIdUseCase';
