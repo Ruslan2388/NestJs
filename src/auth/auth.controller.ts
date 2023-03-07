@@ -37,13 +37,11 @@ export class AuthController {
     @HttpCode(200)
     async login(@Res({ passthrough: true }) response: Response, @Req() request: Request, @Body() inputModel: LoginInputModelType) {
         const user = await this.usersService.getUserByLoginOrEmail(inputModel.loginOrEmail);
-
+        if (!user) throw new UnauthorizedException();
         if (!(await bcrypt.compare(inputModel.password, user.accountData.password))) {
             throw new UnauthorizedException();
         }
-
         const deviceId = randomUUID();
-
         const accessToken = await this.authService.createAccessToken(user.accountData.id, deviceId);
         const refreshToken = await this.authService.createRefreshToken(user.accountData.id, deviceId);
         const time = await this.authService.getIatAndExpToken(refreshToken);

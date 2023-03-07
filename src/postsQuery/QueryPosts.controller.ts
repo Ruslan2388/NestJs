@@ -52,7 +52,7 @@ export class QueryPostsController {
         const post = await this.queryPostsService.getPostById(postId, '');
         if (!post) throw new NotFoundException();
         let authUserId;
-
+        if (!request.headers.authorization) return await this.commentsService.getCommentsByPostId(postId, null, queryData);
         if (request.headers.authorization) {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await this.usersService.getUserIdByAccessToken(token);
