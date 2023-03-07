@@ -13,11 +13,10 @@ export class CreatePostByBlogIdUseCase implements ICommandHandler<CreatePostByBl
     constructor(protected bloggerRepository: BloggerRepository, protected postsRepository: PostsRepository) {}
     async execute(command: CreatePostByBlogIdCommand) {
         const blog = await this.bloggerRepository.getBlogById(command.blogId);
-        if (blog.blogOwnerInfo.userLogin !== command.user.accountData.login) throw new ForbiddenException();
-
         if (!blog) {
             throw new NotFoundException();
         }
+        if (blog.blogOwnerInfo.userLogin !== command.user.accountData.login) throw new ForbiddenException();
         if (blog) {
             const newPost = {
                 id: new Date().valueOf().toString(),
