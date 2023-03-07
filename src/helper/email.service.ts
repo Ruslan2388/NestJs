@@ -6,7 +6,7 @@ export class EmailService {
     constructor(private readonly mailerService: MailerService) {}
     async sendEmail(email: string, subject: string, confirmationCode: string) {
         try {
-            await this.mailerService.sendMail({
+            this.mailerService.sendMail({
                 from: '"RUSEL" <heeca@mail.ru>', // sender address
                 to: email,
                 subject: subject,
@@ -21,7 +21,7 @@ export class EmailService {
     }
 
     async sendMailRecoveryPassword(email: string, subject: string, NewRecoveryCode: string) {
-        await this.mailerService.sendMail({
+        this.mailerService.sendMail({
             from: '"RUSEL" <heeca@mail.ru>', // sender address
             to: email,
             subject: subject,
