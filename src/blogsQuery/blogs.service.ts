@@ -1,7 +1,5 @@
 import { BlogsRepository } from './blogs.repository';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateBlogInputModelType, UpdateBlogInputModelType } from './BlogDto';
-import { IsBoolean } from 'class-validator';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class BlogsService {

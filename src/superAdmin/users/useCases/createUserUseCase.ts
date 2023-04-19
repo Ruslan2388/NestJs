@@ -40,10 +40,12 @@ export class createUserUseCase implements ICommandHandler<createUserCommand> {
         const result = await this.usersRepository.createUser({ ...newUser });
         await this.emailService.sendEmail(newUser.accountData.email, 'Registr', newUser.emailConfirmation.confirmationCode);
         if (!result)
-            throw new BadRequestException({
-                message: 'Bad',
-                field: 'login or Password',
-            });
+            throw new BadRequestException([
+                {
+                    message: 'Bad',
+                    field: 'login or Password',
+                },
+            ]);
         return {
             id: result.accountData.id,
             login: result.accountData.login,

@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, isEnum, IsOptional, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString, Length } from 'class-validator';
 import { IsEmailInDb, IsLoginInDb } from '../../decorators/registerDecorator';
 import { Transform } from 'class-transformer';
 

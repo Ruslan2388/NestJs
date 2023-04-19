@@ -96,8 +96,7 @@ export class AuthService {
 
     async passwordRecovery(email: string) {
         const user = await this.usersRepository.getUserByLoginOrEmail(email);
-        if (user?.emailConfirmation.isConfirmed === true) throw new BadRequestException([{ message: 'Email is confirm', field: 'email' }]);
-        if (!user) return true;
+        if (!user) throw new BadRequestException([{ message: 'Bad email', field: 'email' }]);
         const NewRecoveryCode = randomUUID();
         await this.usersRepository.updateUserRecoveryPasswordCodeByEmail(email, NewRecoveryCode);
         await this.emailAdapter.sendMailRecoveryPassword(email, 'RecoveryPassword', NewRecoveryCode);
