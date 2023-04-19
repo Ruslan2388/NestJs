@@ -92,8 +92,8 @@ const services = [
             useFactory: getMailConfig,
         }),
         ThrottlerModule.forRoot({
-            ttl: 11,
-            limit: 6,
+            ttl: 14,
+            limit: 7,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(process.env.MONGO_URI),
