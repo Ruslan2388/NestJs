@@ -1,7 +1,7 @@
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 const mailAccount = {
-    user: 'heeca@mail.ru',
-    pass: 'jvKMKAkJni1RTmKFDLiu',
+    user: 'it-project-inctagram2000@mail.ru',
+    pass: 'bDdk5kvyQQ2QYuTd6SEf',
 };
 export const getMailConfig = async (): Promise<any> => {
     return {

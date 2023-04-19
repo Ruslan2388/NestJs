@@ -7,7 +7,7 @@ export class EmailService {
     async sendEmail(email: string, subject: string, confirmationCode: string) {
         try {
             await this.mailerService.sendMail({
-                from: '"RUSEL" <heeca@mail.ru>', // sender address
+                from: '"RUSEL" <it-project-inctagram2000@mail.ru>', // sender address
                 to: email,
                 subject: subject,
                 html: `<h1>Thank for your registration</h1>
@@ -15,14 +15,17 @@ export class EmailService {
                              <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
                         </p>`,
             });
+            console.log('email send');
         } catch (e) {
+            console.log(e);
+            console.log('nebmylos');
             return true;
         }
     }
 
     async sendMailRecoveryPassword(email: string, subject: string, NewRecoveryCode: string) {
         await this.mailerService.sendMail({
-            from: '"RUSEL" <heeca@mail.ru>', // sender address
+            from: '"RUSEL" <it-project-inctagram2000@mail.ru>', // sender address
             to: email,
             subject: subject,
             html: `<h1>Thank for your registration</h1>
