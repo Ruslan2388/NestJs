@@ -92,7 +92,7 @@ const services = [
             useFactory: getMailConfig,
         }),
         ThrottlerModule.forRoot({
-            ttl: 10,
+            ttl: 9,
             limit: 5,
         }),
         ConfigModule.forRoot({ isGlobal: true }),
